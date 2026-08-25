@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="biru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PK KNPI Cibinong</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME TOKENS ============ */
+:root, [data-theme="biru"]{
+  --primary:#0B3D91; --primary-dark:#072a66; --primary-light:#1E5FBF;
+  --accent:#FFC72C; --accent-dark:#E0A800;
+  --bg:#F1F4FA; --surface:#FFFFFF; --surface-2:#E7ECF6;
+  --text:#161E2E; --muted:#6B7686; --border:#E1E6F0;
+  --danger:#D64545; --success:#1E9E5A;
+  --on-primary:#FFFFFF;
+}
+[data-theme="merah-putih"]{
+  --primary:#B3122A; --primary-dark:#7D0C1E; --primary-light:#D93A50;
+  --accent:#0B3D91; --accent-dark:#072a66;
+  --bg:#FAF3F1; --surface:#FFFFFF; --surface-2:#F3E6E4;
+  --text:#241416; --muted:#7A6668; --border:#EBD9D6;
+  --danger:#B3122A; --success:#1E9E5A; --on-primary:#FFFFFF;
+}
+[data-theme="hijau"]{
+  --primary:#0E7C4A; --primary-dark:#075733; --primary-light:#2AAA6B;
+  --accent:#FFC72C; --accent-dark:#E0A800;
+  --bg:#F0F7F3; --surface:#FFFFFF; --surface-2:#E2F0E8;
+  --text:#122019; --muted:#647A70; --border:#D9EBE1;
+  --danger:#D64545; --success:#0E7C4A; --on-primary:#FFFFFF;
+}
+[data-theme="navy-elegan"]{
+  --primary:#13294B; --primary-dark:#0A182F; --primary-light:#24406E;
+  --accent:#C9A227; --accent-dark:#A98618;
+  --bg:#0C1626; --surface:#13223B; --surface-2:#1B3054;
+  --text:#EAF0FA; --muted:#93A3BE; --border:#26385A;
+  --danger:#E06767; --success:#3FBE84; --on-primary:#FFFFFF;
+}
+[data-theme="maroon-emas"]{
+  --primary:#7A1220; --primary-dark:#4E0B14; --primary-light:#9E2233;
+  --accent:#D4AF37; --accent-dark:#B7962A;
+  --bg:#FAF4EC; --surface:#FFFFFF; --surface-2:#F2E4CE;
+  --text:#241512; --muted:#7C6A5F; --border:#EADFCB;
+  --danger:#D64545; --success:#1E9E5A; --on-primary:#FFFFFF;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Poppins',sans-serif;}
+img{max-width:100%; display:block;}
+button{font-family:inherit; cursor:pointer;}
+a{color:inherit; text-decoration:none;}
+::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+
+/* ===== MOBILE-STYLE LAYOUT: narrow column, no phone-frame mockup ===== */
+.stage{
+  min-height:100vh;
+  width:100%;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  background:var(--bg);
+}
+.phone{
+  width:100%;
+  max-width:460px;
+  min-height:100vh;
+  background:var(--bg);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+}
+@media (min-width:461px){
+  .stage{ background:var(--surface-2); }
+  .phone{ box-shadow:0 0 40px rgba(0,0,0,.06); }
+}
+.phone-scroll{ flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+/* ===== HEADER ===== */
+.topbar{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  padding:14px 16px 16px;
+  display:flex; align-items:center; gap:10px;
+  position:sticky; top:0; z-index:40;
+  box-shadow:0 4px 14px rgba(0,0,0,.15);
+}
+.brand{display:flex; align-items:center; gap:10px; flex:1; min-width:0;}
+.logo-badge{
+  width:38px; height:38px; border-radius:11px; background:var(--accent);
+  color:var(--primary-dark); display:flex; align-items:center; justify-content:center;
+  font-family:'Poppins'; font-weight:800; font-size:14px; flex-shrink:0; overflow:hidden;
+}
+.logo-badge img{width:100%;height:100%;object-fit:cover;}
+.brand-text{min-width:0;}
+.brand-text .name{font-family:'Poppins'; font-weight:700; font-size:14.5px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.brand-text .tag{font-size:10.5px; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.icon-btn{
+  width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.14);
+  display:flex;align-items:center;justify-content:center; border:none; color:#fff; flex-shrink:0;
+}
+.icon-btn:active{background:rgba(255,255,255,.28);}
+
+/* ===== MAIN VIEW ===== */
+.view{flex:1; padding-bottom:90px;}
+.section{padding:18px 16px 6px;}
+.section-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.section-head h2{font-size:15.5px; font-weight:700;}
+.section-head .more{font-size:11.5px; color:var(--primary); font-weight:600;}
+
+/* ===== HERO ===== */
+.hero{
+  margin:14px 16px; border-radius:20px; padding:22px 18px 20px;
+  background:linear-gradient(150deg,var(--primary-light),var(--primary) 60%, var(--primary-dark));
+  color:#fff; position:relative; overflow:hidden;
+}
+.hero::after{
+  content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px;
+  background:radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+}
+.hero .eyebrow{font-size:10.5px; letter-spacing:1.6px; font-weight:700; opacity:.85; text-transform:uppercase;}
+.hero h1{font-size:21px; font-weight:800; margin:6px 0 8px; line-height:1.25;}
+.hero p{font-size:12.5px; opacity:.92; line-height:1.5; max-width:92%;}
+.hero-actions{display:flex; gap:8px; margin-top:16px;}
+.btn{
+  border:none; border-radius:11px; padding:10px 14px; font-size:12.5px; font-weight:700;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn-accent{background:var(--accent); color:var(--primary-dark);}
+.btn-ghost{background:rgba(255,255,255,.16); color:#fff;}
+.btn-primary{background:var(--primary); color:#fff;}
+.btn-outline{background:transparent; border:1.5px solid var(--primary); color:var(--primary);}
+.btn-block{width:100%; justify-content:center;}
+.btn-sm{padding:7px 10px; font-size:11.5px; border-radius:9px;}
+.btn-danger{background:#fdeceb; color:var(--danger);}
+
+/* stat chips */
+.stats{display:flex; gap:8px; padding:0 16px; margin:2px 0 4px;}
+.stat{flex:1; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:10px 8px; text-align:center;}
+.stat b{display:block; font-family:'Poppins'; font-size:16px; color:var(--primary);}
+.stat span{font-size:9.5px; color:var(--muted); font-weight:600;}
+
+/* horizontal scroller */
+.hscroll{display:flex; gap:11px; overflow-x:auto; padding:2px 16px 10px;}
+.card-news{
+  min-width:190px; max-width:190px; background:var(--surface); border-radius:16px; overflow:hidden;
+  border:1px solid var(--border); flex-shrink:0;
+}
+.card-news .thumb{height:96px; width:100%; object-fit:cover; background:var(--surface-2);}
+.card-news .body{padding:9px 10px 11px;}
+.badge{display:inline-block; font-size:9px; font-weight:700; padding:2px 7px; border-radius:20px; background:var(--surface-2); color:var(--primary);}
+.card-news h3{font-size:12px; font-weight:700; margin:6px 0 3px; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.card-news .date{font-size:9.5px; color:var(--muted);}
+
+.gscroll{display:flex; gap:8px; overflow-x:auto; padding:2px 16px 14px;}
+.gthumb{width:78px; height:78px; border-radius:12px; object-fit:cover; flex-shrink:0; background:var(--surface-2);}
+
+/* list cards (berita / kegiatan) */
+.list-card{
+  display:flex; gap:11px; background:var(--surface); border:1px solid var(--border); border-radius:16px;
+  padding:10px; margin:0 16px 11px;
+}
+.list-card .thumb{width:84px; height:84px; border-radius:12px; object-fit:cover; flex-shrink:0; background:var(--surface-2);}
+.list-card .info{flex:1; min-width:0;}
+.list-card h3{font-size:13px; font-weight:700; line-height:1.3; margin-bottom:3px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.list-card p{font-size:11px; color:var(--muted); line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.list-card .meta{display:flex; gap:6px; align-items:center; margin-top:6px; font-size:9.5px; color:var(--muted); font-weight:600;}
+
+.chip-row{display:flex; gap:7px; overflow-x:auto; padding:2px 16px 12px;}
+.chip{
+  flex-shrink:0; padding:7px 13px; border-radius:20px; background:var(--surface); border:1px solid var(--border);
+  font-size:11.5px; font-weight:600; color:var(--muted);
+}
+.chip.active{background:var(--primary); color:#fff; border-color:var(--primary);}
+
+/* about tabs content */
+.card{background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px; margin:0 16px 14px;}
+.card h3{font-size:14px; font-weight:700; margin-bottom:8px; color:var(--primary);}
+.card p{font-size:12.5px; line-height:1.65; color:var(--text);}
+.misi-item{display:flex; gap:9px; margin-bottom:10px; font-size:12.5px; line-height:1.5;}
+.misi-num{
+  width:22px; height:22px; border-radius:7px; background:var(--surface-2); color:var(--primary);
+  font-family:'Poppins'; font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.struktur-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 14px;}
+.person{background:var(--surface); border:1px solid var(--border); border-radius:15px; padding:12px 10px; text-align:center;}
+.person .avatar{
+  width:52px; height:52px; margin:0 auto 8px; border-radius:50%; background:linear-gradient(135deg,var(--primary-light),var(--primary));
+  color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; font-size:16px; overflow:hidden;
+}
+.person .avatar img{width:100%;height:100%;object-fit:cover;}
+.person b{font-size:11.5px; display:block; line-height:1.3;}
+.person span{font-size:9.5px; color:var(--muted); display:block; margin-top:2px;}
+
+.map-wrap{margin:0 16px 14px; border-radius:16px; overflow:hidden; border:1px solid var(--border);}
+.map-wrap iframe{width:100%; height:190px; border:0; display:block;}
+.map-info{background:var(--surface); padding:12px 14px;}
+
+.contact-row{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 14px; margin:0 16px 10px;}
+.contact-row .cico{width:38px; height:38px; border-radius:10px; background:var(--surface-2); color:var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.contact-row .ctext b{font-size:12.5px; display:block;}
+.contact-row .ctext span{font-size:11px; color:var(--muted);}
+
+/* gallery grid */
+.gal-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:2px 16px 16px;}
+.gal-grid .gitem{position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1/1; background:var(--surface-2);}
+.gal-grid .gitem img{width:100%; height:100%; object-fit:cover;}
+
+/* forms */
+.field{margin-bottom:12px;}
+.field label{font-size:11.5px; font-weight:700; color:var(--muted); display:block; margin-bottom:5px;}
+.field input[type=text], .field input[type=password], .field input[type=email], .field input[type=tel], .field input[type=date], .field textarea, .field select{
+  width:100%; border:1.5px solid var(--border); border-radius:11px; padding:10px 12px; font-size:12.5px; font-family:inherit; background:var(--surface); color:var(--text);
+}
+.field textarea{resize:vertical; min-height:80px;}
+.upload-box{
+  border:1.6px dashed var(--border); border-radius:13px; padding:14px; text-align:center; font-size:11.5px; color:var(--muted); position:relative; background:var(--surface-2);
+}
+.upload-box input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+.upload-preview{width:100%; max-height:130px; object-fit:cover; border-radius:10px; margin-bottom:8px;}
+.photo-mini-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px;}
+.photo-mini-grid .pm{position:relative; aspect-ratio:1/1; border-radius:8px; overflow:hidden;}
+.photo-mini-grid .pm img{width:100%;height:100%;object-fit:cover;}
+.photo-mini-grid .pm button{position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; border:none; font-size:10px; line-height:1;}
+
+/* bottom nav */
+.bottomnav{
+  position:sticky; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--border);
+  display:flex; z-index:50; padding:6px 2px 8px;
+}
+.navbtn{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; color:var(--muted); padding:6px 2px;}
+.navbtn svg{width:20px; height:20px;}
+.navbtn span{font-size:8.6px; font-weight:700;}
+.navbtn.active{color:var(--primary);}
+
+/* detail / overlay panel */
+.overlay{
+  position:absolute; inset:0; background:var(--bg); z-index:70; display:flex; flex-direction:column; transform:translateX(100%);
+  transition:transform .28s ease;
+}
+.overlay.open{transform:translateX(0);}
+.overlay-head{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; padding:14px 16px; display:flex; align-items:center; gap:10px;
+  position:sticky; top:0;
+}
+.overlay-head h2{font-size:14px; font-weight:700; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.overlay-body{flex:1; overflow-y:auto; padding-bottom:30px;}
+.detail-cover{width:100%; height:190px; object-fit:cover; background:var(--surface-2);}
+.detail-pad{padding:16px;}
+.detail-pad h1{font-size:17px; font-weight:800; line-height:1.35; margin-bottom:6px;}
+.detail-pad .meta{font-size:11px; color:var(--muted); margin-bottom:14px; font-weight:600;}
+.detail-pad .content{font-size:13px; line-height:1.8; white-space:pre-line;}
+
+/* toast */
+#toast{
+  position:absolute; left:16px; right:16px; bottom:96px; background:#161E2E; color:#fff; padding:11px 14px; border-radius:12px;
+  font-size:12px; font-weight:600; z-index:200; opacity:0; pointer-events:none; transition:.25s; text-align:center;
+}
+#toast.show{opacity:1; transform:translateY(-4px);}
+
+/* lightbox */
+#lightbox{position:absolute; inset:0; background:rgba(5,8,16,.94); z-index:300; display:none; align-items:center; justify-content:center; flex-direction:column;}
+#lightbox.show{display:flex;}
+#lightbox img{max-width:92%; max-height:70%; border-radius:8px;}
+#lightbox .lb-cap{color:#fff; font-size:12px; margin-top:12px; text-align:center; padding:0 20px;}
+#lightbox .lb-close{position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.15); color:#fff; border:none;}
+#lightbox .lb-nav{position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15); color:#fff; border:none; font-size:16px;}
+#lightbox .lb-prev{left:10px;} #lightbox .lb-next{right:10px;}
+
+/* admin */
+.tabbar{display:flex; gap:6px; overflow-x:auto; padding:12px 16px 4px;}
+.tabbar button{flex-shrink:0; padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface); font-size:11.5px; font-weight:700; color:var(--muted);}
+.tabbar button.active{background:var(--primary); color:#fff; border-color:var(--primary);}
+.admin-item{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:11px 12px; margin:0 16px 10px; display:flex; gap:10px; align-items:center;}
+.admin-item img{width:52px;height:52px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--surface-2);}
+.admin-item .ai-info{flex:1; min-width:0;}
+.admin-item .ai-info b{font-size:12px; display:block; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.admin-item .ai-info span{font-size:10px; color:var(--muted);}
+.admin-item .ai-actions{display:flex; gap:6px;}
+.icon-mini{width:30px;height:30px;border-radius:8px;background:var(--surface-2); border:none; display:flex; align-items:center; justify-content:center; color:var(--text);}
+.theme-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 16px;}
+.theme-swatch{border-radius:14px; padding:12px; border:2px solid var(--border); position:relative; cursor:pointer; background:var(--surface);}
+.theme-swatch.selected{border-color:var(--primary);}
+.theme-swatch .dots{display:flex; gap:5px; margin-bottom:8px;}
+.theme-swatch .dot{width:16px; height:16px; border-radius:50%;}
+.theme-swatch b{font-size:11.5px;}
+.lock-screen{padding:60px 24px; text-align:center;}
+.lock-screen .li{width:64px; height:64px; border-radius:18px; background:var(--surface-2); color:var(--primary); display:flex; align-items:center; justify-content:center; margin:0 auto 18px;}
+.empty{padding:40px 20px; text-align:center; color:var(--muted); font-size:12.5px;}
+.empty b{display:block; color:var(--text); font-size:14px; margin-bottom:5px; font-family:'Poppins';}
+.divider{height:1px; background:var(--border); margin:6px 16px 14px;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone">
+    <div class="phone-scroll" id="phoneScroll">
+
+      <div class="topbar">
+        <div class="brand" onclick="handleBrandTap()" style="cursor:pointer; user-select:none;">
+          <div class="logo-badge" id="logoBadge">KC</div>
+          <div class="brand-text">
+            <div class="name" id="brandName">PK KNPI Cibinong</div>
+            <div class="tag" id="brandTag">Bersatu, Berkarya, Berdaya</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" id="view"></div>
+
+      <div class="bottomnav" id="bottomnav"></div>
+
+      <!-- overlays -->
+      <div class="overlay" id="overlayDetail">
+        <div class="overlay-head">
+          <button class="icon-btn" onclick="closeOverlay()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+          <h2 id="overlayTitle">Detail</h2>
+        </div>
+        <div class="overlay-body" id="overlayBody"></div>
+      </div>
+
+      <div id="toast"></div>
+
+      <div id="lightbox">
+        <button class="lb-close" onclick="closeLightbox()">✕</button>
+        <button class="lb-nav lb-prev" onclick="lbNav(-1)">‹</button>
+        <img id="lbImg" src="">
+        <button class="lb-nav lb-next" onclick="lbNav(1)">›</button>
+        <div class="lb-cap" id="lbCap"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= PENYIMPANAN DATA (BACKEND REDIS) =================
+   Situs ini awalnya dibuat sebagai Claude Artifact yang memakai
+   window.storage bawaan Claude. Saat di-host mandiri (Vercel), storage
+   itu tidak ada, jadi di sini window.storage dibuat ulang agar
+   memanggil API /api/storage yang tersambung ke database Redis
+   (Upstash), supaya semua data yang diubah lewat panel admin
+   tersimpan permanen dan terlihat oleh semua pengunjung. */
+window.storage = {
+  async get(key){
+    const res = await fetch('/api/storage?key=' + encodeURIComponent(key));
+    if(!res.ok) return null;
+    const data = await res.json();
+    if(data.value === null || data.value === undefined) return null;
+    return { key, value: data.value, shared: true };
+  },
+  async set(key, value){
+    const res = await fetch('/api/storage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value })
+    });
+    if(!res.ok) return null;
+    return { key, value, shared: true };
+  },
+  async delete(key){
+    const res = await fetch('/api/storage', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    if(!res.ok) return null;
+    return { key, deleted: true, shared: true };
+  },
+  async list(prefix){
+    const res = await fetch('/api/storage-list?prefix=' + encodeURIComponent(prefix || ''));
+    if(!res.ok) return null;
+    return await res.json();
+  }
+};
+
+/* ================= ICONS ================= */
+const ICONS = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>',
+  activity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
+  gallery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="M21 15l-5-5L5 21"/></svg>',
+  contact:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 3a2 2 0 01-.5 2L8 10a16 16 0 006 6l1.3-1.3a2 2 0 012-.5c1 .3 2 .5 3 .6a2 2 0 011.7 2.1z"/></svg>',
+  map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/></svg>',
+  wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.6.1s-.6.9-.7 1.1c-.1.1-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.6-1.5-1.9-.1-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5.1-1.3A10 10 0 1012 2z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 3a2 2 0 01-.5 2L8 10a16 16 0 006 6l1.3-1.3a2 2 0 012-.5c1 .3 2 .5 3 .6a2 2 0 011.7 2.1z"/></svg>',
+  ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>',
+  fb:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>',
+  logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
+  photo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="M21 15l-5-5L5 21"/></svg>',
+};
+
+/* ================= DEFAULT DATA ================= */
+const THEMES = [
+  {id:'biru', name:'Biru KNPI', colors:['#0B3D91','#1E5FBF','#FFC72C']},
+  {id:'merah-putih', name:'Merah Putih', colors:['#B3122A','#D93A50','#0B3D91']},
+  {id:'hijau', name:'Hijau Muda', colors:['#0E7C4A','#2AAA6B','#FFC72C']},
+  {id:'navy-elegan', name:'Navy Elegan', colors:['#13294B','#24406E','#C9A227']},
+  {id:'maroon-emas', name:'Maroon Emas', colors:['#7A1220','#9E2233','#D4AF37']},
+];
+
+const ADMIN_PASSWORD = "knpicibinong2026";
+
+function placeholderImg(text, c1, c2){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs><rect width='400' height='300' fill='url(#g)'/><circle cx='330' cy='40' r='70' fill='rgba(255,255,255,.08)'/><circle cx='40' cy='270' r='90' fill='rgba(255,255,255,.07)'/><text x='200' y='160' font-family='sans-serif' font-size='22' fill='rgba(255,255,255,.92)' text-anchor='middle' font-weight='700'>${text}</text></svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function defaultConfig(){
+  return {
+    orgName:"PK KNPI Cibinong",
+    orgShort:"KC",
+    orgFull:"Pimpinan Kecamatan Komite Nasional Pemuda Indonesia Kecamatan Cibinong",
+    tagline:"Bersatu, Berkarya, Berdaya untuk Cibinong",
+    logo:null,
+    theme:"biru",
+    heroTitle:"PK KNPI Cibinong",
+    heroSubtitle:"Wadah pemersatu dan pemberdayaan pemuda se-Kecamatan Cibinong",
+    stat1:"25+", stat1Label:"OKP Bergabung",
+    stat2:"40+", stat2Label:"Program Kerja",
+    stat3:"1973", stat3Label:"KNPI Berdiri",
+    visi:"Menjadi wadah pemersatu dan pemberdayaan pemuda Kecamatan Cibinong yang mandiri, berkarakter, kreatif, dan berdaya saing dalam mendukung pembangunan bangsa.",
+    misi:[
+      "Menghimpun dan mempersatukan Organisasi Kepemudaan (OKP) se-Kecamatan Cibinong.",
+      "Mengembangkan potensi kepemimpinan, kewirausahaan, dan daya saing pemuda.",
+      "Menjadi mitra strategis pemerintah kecamatan dalam program-program kepemudaan.",
+      "Meningkatkan partisipasi pemuda dalam kegiatan sosial, budaya, dan olahraga.",
+      "Membangun jejaring komunikasi dan kolaborasi antar OKP tingkat kecamatan."
+    ],
+    profil:"Komite Nasional Pemuda Indonesia (KNPI) Kecamatan Cibinong adalah wadah berhimpun organisasi kepemudaan (OKP) di tingkat kecamatan yang berfungsi sebagai mitra pemerintah dalam pembinaan dan pemberdayaan generasi muda. PK KNPI Cibinong hadir untuk merajut komunikasi, memfasilitasi program kaderisasi, serta mendorong partisipasi aktif pemuda dalam pembangunan di wilayah Kecamatan Cibinong, Kabupaten Bogor.\\n\\nMelalui berbagai program kerja di bidang organisasi, sosial kemasyarakatan, olahraga, kewirausahaan, dan seni budaya, PK KNPI Cibinong berkomitmen menjadi rumah bersama bagi pemuda untuk berkarya, berkolaborasi, dan berkontribusi nyata bagi kemajuan daerah.",
+    struktur:[
+      {id:1,name:"(Nama Ketua)", jabatan:"Ketua PK KNPI Cibinong", photo:null},
+      {id:2,name:"(Nama Wakil Ketua)", jabatan:"Wakil Ketua", photo:null},
+      {id:3,name:"(Nama Sekretaris)", jabatan:"Sekretaris", photo:null},
+      {id:4,name:"(Nama Bendahara)", jabatan:"Bendahara", photo:null},
+      {id:5,name:"(Nama Kabid Organisasi)", jabatan:"Kabid Organisasi & Kaderisasi", photo:null},
+      {id:6,name:"(Nama Kabid Sosial)", jabatan:"Kabid Sosial & Kemasyarakatan", photo:null}
+    ],
+    alamat:"Sekretariat PK KNPI Cibinong, Kecamatan Cibinong, Kabupaten Bogor, Jawa Barat",
+    telp:"0812-0000-0000",
+    email:"pkknpicibinong@gmail.com",
+    ig:"pkknpicibinong",
+    fb:"PK KNPI Cibinong",
+    wa:"6281200000000",
+    mapQuery:"-6.4844417,106.8366672",
+    mapLink:"https://www.google.com/maps/place/Gedung+KNPI/@-6.4844417,106.8340923,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69c19497bc1935:0xade942bcf11f7c2d!8m2!3d-6.4844417!4d106.8366672"
+  };
+}
+
+function seedNews(){
+  return [
+    {id:'n1', category:'Pengumuman', title:'Pelantikan Pengurus PK KNPI Cibinong Masa Bakti Baru', excerpt:'Pelantikan pengurus baru berlangsung khidmat dan dihadiri unsur Muspika Kecamatan Cibinong.', content:'Pelantikan Pengurus Kecamatan (PK) KNPI Cibinong masa bakti berjalan dengan lancar dan khidmat. Acara ini dihadiri oleh unsur Muspika Kecamatan Cibinong, perwakilan DPD KNPI Kabupaten Bogor, serta puluhan Organisasi Kepemudaan (OKP) se-Kecamatan Cibinong.\\n\\nDalam sambutannya, Ketua PK KNPI Cibinong menegaskan komitmen untuk merangkul seluruh elemen pemuda dan menjadikan organisasi ini sebagai rumah bersama bagi generasi muda Cibinong untuk berkarya dan berkontribusi bagi kemajuan daerah.', image:placeholderImg('Pelantikan Pengurus','#0B3D91','#1E5FBF'), date:'2026-01-12'},
+    {id:'n2', category:'Kegiatan', title:'PK KNPI Cibinong Gelar Bakti Sosial di Wilayah Terdampak Banjir', excerpt:'Bantuan sembako dan kebutuhan pokok disalurkan kepada warga terdampak.', content:'Sebagai bentuk kepedulian sosial, PK KNPI Cibinong bersama OKP se-Kecamatan menggelar aksi bakti sosial berupa penyaluran bantuan sembako dan kebutuhan pokok kepada warga yang terdampak banjir di wilayah Cibinong.\\n\\nKegiatan ini merupakan wujud nyata kepedulian pemuda terhadap masyarakat sekitar, sekaligus mempererat sinergi antar OKP dalam merespons isu-isu sosial kemasyarakatan.', image:placeholderImg('Bakti Sosial','#1E5FBF','#0B3D91'), date:'2026-02-03'},
+    {id:'n3', category:'Umum', title:'Sinergi Bersama Pemerintah Kecamatan Dorong Program Kepemudaan', excerpt:'Audiensi bersama Camat Cibinong membahas program kolaborasi tahun ini.', content:'PK KNPI Cibinong melakukan audiensi dengan Camat Cibinong guna membahas rencana program kolaborasi kepemudaan sepanjang tahun ini, mencakup pelatihan kewirausahaan, pengembangan kapasitas kepemimpinan, dan kegiatan sosial kemasyarakatan.\\n\\nCamat Cibinong menyambut baik inisiatif ini dan menyatakan dukungan penuh pemerintah kecamatan terhadap program-program yang digagas oleh pemuda.', image:placeholderImg('Audiensi Camat','#0B3D91','#072a66'), date:'2026-02-20'}
+  ];
+}
+function seedActivity(){
+  return [
+    {id:'a1', title:'Turnamen Futsal Antar OKP se-Kecamatan Cibinong', date:'2026-03-08', location:'GOR Pakansari, Cibinong', desc:'Turnamen futsal tahunan diikuti puluhan Organisasi Kepemudaan sebagai ajang mempererat silaturahmi dan sportivitas antar pemuda se-Kecamatan Cibinong.', cover:placeholderImg('Turnamen Futsal','#FFC72C','#E0A800'), photos:[placeholderImg('Foto 1','#0B3D91','#1E5FBF'),placeholderImg('Foto 2','#1E5FBF','#0B3D91'),placeholderImg('Foto 3','#072a66','#0B3D91')]},
+    {id:'a2', title:'Pelatihan Kewirausahaan Muda Cibinong', date:'2026-04-14', location:'Aula Kecamatan Cibinong', desc:'Pelatihan kewirausahaan bagi pemuda untuk membekali keterampilan bisnis dan digital marketing guna mendorong pemuda yang mandiri secara ekonomi.', cover:placeholderImg('Pelatihan Wirausaha','#0E7C4A','#2AAA6B'), photos:[placeholderImg('Foto 1','#0B3D91','#1E5FBF'),placeholderImg('Foto 2','#1E5FBF','#072a66')]}
+  ];
+}
+function seedGallery(){
+  const cats=['Kegiatan','Rapat','Sosial','Olahraga'];
+  return [
+    {id:'g1', image:placeholderImg('Rapat Koordinasi','#0B3D91','#1E5FBF'), caption:'Rapat koordinasi pengurus', category:'Rapat'},
+    {id:'g2', image:placeholderImg('Baksos','#1E5FBF','#0B3D91'), caption:'Kegiatan bakti sosial', category:'Sosial'},
+    {id:'g3', image:placeholderImg('Futsal','#FFC72C','#E0A800'), caption:'Turnamen futsal antar OKP', category:'Olahraga'},
+    {id:'g4', image:placeholderImg('Pelantikan','#072a66','#0B3D91'), caption:'Pelantikan pengurus baru', category:'Kegiatan'},
+    {id:'g5', image:placeholderImg('Pelatihan','#0E7C4A','#2AAA6B'), caption:'Pelatihan kewirausahaan', category:'Kegiatan'},
+    {id:'g6', image:placeholderImg('Audiensi','#0B3D91','#072a66'), caption:'Audiensi bersama Camat', category:'Rapat'},
+  ];
+}
+
+/* ================= STATE ================= */
+let CFG = defaultConfig();
+let NEWS = [];
+let ACT = [];
+let GAL = [];
+let MSG = [];
+let page = 'beranda';
+let aboutTab = 'visi';
+let adminTab = 'berita';
+let adminAuthed = false;
+let galFilter = 'Semua';
+let lbList = []; let lbIdx = 0;
+let editingNews = null, editingAct = null, editingPerson = null;
+
+/* ================= STORAGE ================= */
+async function loadAll(){
+  try{
+    const c = await window.storage.get('site-config', true);
+    CFG = c ? {...defaultConfig(), ...JSON.parse(c.value)} : defaultConfig();
+  }catch(e){ CFG = defaultConfig(); }
+  try{
+    const n = await window.storage.get('news-data', true);
+    NEWS = n ? JSON.parse(n.value) : seedNews();
+  }catch(e){ NEWS = seedNews(); }
+  try{
+    const a = await window.storage.get('activity-data', true);
+    ACT = a ? JSON.parse(a.value) : seedActivity();
+  }catch(e){ ACT = seedActivity(); }
+  try{
+    const g = await window.storage.get('gallery-data', true);
+    GAL = g ? JSON.parse(g.value) : seedGallery();
+  }catch(e){ GAL = seedGallery(); }
+  try{
+    const m = await window.storage.get('messages-data', true);
+    MSG = m ? JSON.parse(m.value) : [];
+  }catch(e){ MSG = []; }
+}
+async function saveConfig(){ try{ await window.storage.set('site-config', JSON.stringify(CFG), true); }catch(e){ toast('Gagal menyimpan (offline?)'); } }
+async function saveNews(){ try{ await window.storage.set('news-data', JSON.stringify(NEWS), true); }catch(e){ toast('Gagal menyimpan'); } }
+async function saveAct(){ try{ await window.storage.set('activity-data', JSON.stringify(ACT), true); }catch(e){ toast('Gagal menyimpan'); } }
+async function saveGal(){ try{ await window.storage.set('gallery-data', JSON.stringify(GAL), true); }catch(e){ toast('Gagal menyimpan'); } }
+async function saveMsg(){ try{ await window.storage.set('messages-data', JSON.stringify(MSG), true); }catch(e){ toast('Gagal menyimpan'); } }
+
+/* ================= HELPERS ================= */
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function fmtDate(d){
+  if(!d) return '';
+  const dt = new Date(d+'T00:00:00');
+  if(isNaN(dt)) return d;
+  const bulan=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return dt.getDate()+' '+bulan[dt.getMonth()]+' '+dt.getFullYear();
+}
+function uid(){ return 'id'+Date.now()+Math.floor(Math.random()*1000); }
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function resizeImage(file, maxDim=900, quality=0.72){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        let w=img.width, h=img.height;
+        if(w>h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; }
+        else if(h>=w && h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
+        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+function scrollTop(){ document.getElementById('phoneScroll').scrollTop=0; }
+
+/* ================= RENDER: SHELL ================= */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', CFG.theme);
+}
+function renderBrand(){
+  document.getElementById('brandName').textContent = CFG.orgName;
+  document.getElementById('brandTag').textContent = CFG.tagline;
+  const badge = document.getElementById('logoBadge');
+  badge.innerHTML = CFG.logo ? `<img src="${CFG.logo}">` : esc(CFG.orgShort||'KC');
+}
+const NAV = [
+  {id:'beranda', label:'Beranda', icon:'home'},
+  {id:'tentang', label:'Tentang', icon:'info'},
+  {id:'berita', label:'Berita', icon:'news'},
+  {id:'kegiatan', label:'Kegiatan', icon:'activity'},
+  {id:'galeri', label:'Galeri', icon:'gallery'},
+  {id:'kontak', label:'Kontak', icon:'contact'},
+];
+function renderNav(){
+  document.getElementById('bottomnav').innerHTML = NAV.map(n=>`
+    <button class="navbtn ${page===n.id?'active':''}" onclick="go('${n.id}')">
+      ${ICONS[n.icon]}<span>${n.label}</span>
+    </button>`).join('');
+}
+function go(p){
+  page = p; closeOverlay(); scrollTop(); render();
+}
+
+/* ================= SECRET ADMIN ACCESS =================
+   Halaman admin TIDAK ditampilkan di menu manapun. Cara masuk:
+   1) Ketik/buka URL dengan akhiran  #kc-admin-2026
+   2) Atau ketuk logo/nama organisasi di header sebanyak 5x berturut-turut (dalam 2 detik)
+   3) Atau di desktop, tekan tombol Ctrl + Alt + A
+   Ganti kode rahasia ini kapan saja sesuai selera Anda. */
+const SECRET_HASH = '#kc-admin-2026';
+let _tapCount = 0, _tapTimer = null;
+function handleBrandTap(){
+  _tapCount++;
+  clearTimeout(_tapTimer);
+  _tapTimer = setTimeout(()=>{ _tapCount = 0; }, 2000);
+  if(_tapCount >= 5){
+    _tapCount = 0;
+    go('admin');
+  } else {
+    go('beranda');
+  }
+}
+window.addEventListener('hashchange', ()=>{
+  if(location.hash === SECRET_HASH){ go('admin'); history.replaceState(null,'',location.pathname); }
+});
+window.addEventListener('keydown', (e)=>{
+  if(e.ctrlKey && e.altKey && (e.key==='a' || e.key==='A')){ e.preventDefault(); go('admin'); }
+});
+
+/* ================= RENDER: ROUTER ================= */
+function render(){
+  applyTheme(); renderBrand(); renderNav();
+  const v = document.getElementById('view');
+  if(page==='beranda') v.innerHTML = viewBeranda();
+  else if(page==='tentang') v.innerHTML = viewTentang();
+  else if(page==='berita') v.innerHTML = viewBerita();
+  else if(page==='kegiatan') v.innerHTML = viewKegiatan();
+  else if(page==='galeri') v.innerHTML = viewGaleri();
+  else if(page==='kontak') v.innerHTML = viewKontak();
+  else if(page==='admin') v.innerHTML = viewAdmin();
+}
+
+/* ================= BERANDA ================= */
+function viewBeranda(){
+  const latestNews = [...NEWS].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
+  const latestAct = [...ACT].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,2);
+  const galPreview = GAL.slice(0,8);
+  return `
+  <div class="hero">
+    <div class="eyebrow">Portal Resmi Organisasi</div>
+    <h1>${esc(CFG.heroTitle)}</h1>
+    <p>${esc(CFG.heroSubtitle)}</p>
+    <div class="hero-actions">
+      <button class="btn btn-accent" onclick="go('berita')">${ICONS.news} Lihat Berita</button>
+      <button class="btn btn-ghost" onclick="go('kegiatan')">${ICONS.activity} Kegiatan</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>${esc(CFG.stat1)}</b><span>${esc(CFG.stat1Label)}</span></div>
+    <div class="stat"><b>${esc(CFG.stat2)}</b><span>${esc(CFG.stat2Label)}</span></div>
+    <div class="stat"><b>${esc(CFG.stat3)}</b><span>${esc(CFG.stat3Label)}</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Berita Terbaru</h2><span class="more" onclick="go('berita')">Lihat semua</span></div>
+  </div>
+  <div class="hscroll">
+    ${latestNews.map(n=>`
+      <div class="card-news" onclick="openNews('${n.id}')">
+        <img class="thumb" src="${n.image}">
+        <div class="body">
+          <span class="badge">${esc(n.category)}</span>
+          <h3>${esc(n.title)}</h3>
+          <div class="date">${fmtDate(n.date)}</div>
+        </div>
+      </div>`).join('') || '<div class="empty" style="padding:20px">Belum ada berita.</div>'}
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>Kegiatan Terbaru</h2><span class="more" onclick="go('kegiatan')">Lihat semua</span></div>
+  </div>
+  ${latestAct.map(a=>`
+    <div class="list-card" onclick="openActivity('${a.id}')">
+      <img class="thumb" src="${a.cover}">
+      <div class="info">
+        <h3>${esc(a.title)}</h3>
+        <p>${esc(a.desc)}</p>
+        <div class="meta">${ICONS.pin.replace('<svg','<svg width="10" height="10"')} ${esc(a.location)}</div>
+      </div>
+    </div>`).join('') || '<div class="empty">Belum ada kegiatan.</div>'}
+
+  <div class="section">
+    <div class="section-head"><h2>Galeri Sekilas</h2><span class="more" onclick="go('galeri')">Lihat semua</span></div>
+  </div>
+  <div class="gscroll">
+    ${galPreview.map((g,i)=>`<img class="gthumb" src="${g.image}" onclick="openLightbox(${JSON.stringify(galPreview.map(x=>x.image)).replace(/"/g,'&quot;')}, ${i}, '${esc(g.caption).replace(/'/g,"\\'")}')">`).join('')}
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none;">
+    <h3 style="color:#fff">Gabung Bersama Kami</h3>
+    <p style="color:rgba(255,255,255,.88); margin-bottom:12px;">Ayo jadi bagian dari OKP dan program kepemudaan PK KNPI Cibinong.</p>
+    <button class="btn btn-accent btn-block" onclick="go('kontak')">Hubungi Kami</button>
+  </div>
+  `;
+}
+
+/* ================= TENTANG KAMI ================= */
+function viewTentang(){
+  const tabs=[['visi','Visi & Misi'],['profil','Profil'],['struktur','Struktur'],['alamat','Alamat & Peta']];
+  return `
+  <div class="chip-row">
+    ${tabs.map(t=>`<div class="chip ${aboutTab===t[0]?'active':''}" onclick="setAboutTab('${t[0]}')">${t[1]}</div>`).join('')}
+  </div>
+  ${aboutTab==='visi' ? `
+    <div class="card">
+      <h3>Visi</h3>
+      <p>${esc(CFG.visi)}</p>
+    </div>
+    <div class="card">
+      <h3>Misi</h3>
+      ${CFG.misi.map((m,i)=>`<div class="misi-item"><div class="misi-num">${i+1}</div><div>${esc(m)}</div></div>`).join('')}
+    </div>
+  ` : ''}
+  ${aboutTab==='profil' ? `
+    <div class="card"><h3>Profil Organisasi</h3><p>${esc(CFG.profil).replace(/\\n/g,'<br><br>')}</p></div>
+  ` : ''}
+  ${aboutTab==='struktur' ? `
+    <div class="section" style="padding-top:6px"><div class="section-head"><h2>Struktur Organisasi</h2></div></div>
+    <div class="struktur-grid">
+      ${CFG.struktur.map(p=>`
+        <div class="person">
+          <div class="avatar">${p.photo?`<img src="${p.photo}">`:esc((p.name||'?').trim().split(' ').map(w=>w[0]).slice(0,2).join(''))}</div>
+          <b>${esc(p.name)}</b><span>${esc(p.jabatan)}</span>
+        </div>`).join('')}
+    </div>
+  ` : ''}
+  ${aboutTab==='alamat' ? `
+    <div class="map-wrap">
+      <iframe src="https://www.google.com/maps?q=${encodeURIComponent(CFG.mapQuery)}&z=17&output=embed" loading="lazy"></iframe>
+      <div class="map-info">
+        <b style="font-size:12.5px; display:block; margin-bottom:4px;">${ICONS.pin.replace('<svg','<svg width="13" height="13" style="vertical-align:-2px"')} Sekretariat PK KNPI Cibinong</b>
+        <span style="font-size:11.5px; color:var(--muted)">${esc(CFG.alamat)}</span>
+      </div>
+    </div>
+    <div style="padding:0 16px 20px">
+      <a href="${CFG.mapLink}" target="_blank" class="btn btn-outline btn-block">${ICONS.map} Buka di Google Maps</a>
+    </div>
+  ` : ''}
+  `;
+}
+function setAboutTab(t){ aboutTab=t; render(); }
+
+/* ================= BERITA ================= */
+function viewBerita(){
+  const cats = ['Semua', ...new Set(NEWS.map(n=>n.category))];
+  const filtered = (window._newsFilter && window._newsFilter!=='Semua') ? NEWS.filter(n=>n.category===window._newsFilter) : NEWS;
+  const sorted=[...filtered].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  window._newsFilter = window._newsFilter || 'Semua';
+  return `
+  <div class="section"><div class="section-head"><h2>Berita &amp; Pengumuman</h2></div></div>
+  <div class="chip-row">${cats.map(c=>`<div class="chip ${window._newsFilter===c?'active':''}" onclick="filterNews('${c}')">${esc(c)}</div>`).join('')}</div>
+  ${sorted.map(n=>`
+    <div class="list-card" onclick="openNews('${n.id}')">
+      <img class="thumb" src="${n.image}">
+      <div class="info">
+        <span class="badge">${esc(n.category)}</span>
+        <h3 style="margin-top:4px">${esc(n.title)}</h3>
+        <p>${esc(n.excerpt)}</p>
+        <div class="meta">${fmtDate(n.date)}</div>
+      </div>
+    </div>`).join('') || '<div class="empty"><b>Belum ada berita</b>Nantikan kabar terbaru dari kami.</div>'}
+  `;
+}
+function filterNews(c){ window._newsFilter=c; render(); }
+function openNews(id){
+  const n = NEWS.find(x=>x.id===id); if(!n) return;
+  document.getElementById('overlayTitle').textContent='Berita';
+  document.getElementById('overlayBody').innerHTML = `
+    <img class="detail-cover" src="${n.image}">
+    <div class="detail-pad">
+      <span class="badge">${esc(n.category)}</span>
+      <h1 style="margin-top:8px">${esc(n.title)}</h1>
+      <div class="meta">${fmtDate(n.date)}</div>
+      <div class="content">${esc(n.content)}</div>
+    </div>`;
+  openOverlay();
+}
+
+/* ================= KEGIATAN ================= */
+function viewKegiatan(){
+  const sorted=[...ACT].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return `
+  <div class="section"><div class="section-head"><h2>Kegiatan Kami</h2></div></div>
+  ${sorted.map(a=>`
+    <div class="list-card" onclick="openActivity('${a.id}')">
+      <img class="thumb" src="${a.cover}">
+      <div class="info">
+        <h3>${esc(a.title)}</h3>
+        <p>${esc(a.desc)}</p>
+        <div class="meta">${fmtDate(a.date)} &bull; ${(a.photos||[]).length} foto</div>
+      </div>
+    </div>`).join('') || '<div class="empty"><b>Belum ada kegiatan</b>Kegiatan mendatang akan tampil di sini.</div>'}
+  `;
+}
+function openActivity(id){
+  const a = ACT.find(x=>x.id===id); if(!a) return;
+  document.getElementById('overlayTitle').textContent='Kegiatan';
+  const photos = a.photos||[];
+  document.getElementById('overlayBody').innerHTML = `
+    <img class="detail-cover" src="${a.cover}">
+    <div class="detail-pad">
+      <h1>${esc(a.title)}</h1>
+      <div class="meta">${fmtDate(a.date)} &bull; ${ICONS.pin.replace('<svg','<svg width="10" height="10" style="vertical-align:-1px"')} ${esc(a.location)}</div>
+      <div class="content">${esc(a.desc)}</div>
+    </div>
+    ${photos.length? `
+    <div class="section" style="padding-top:0"><div class="section-head"><h2>Dokumentasi Foto</h2></div></div>
+    <div class="gal-grid">
+      ${photos.map((p,i)=>`<div class="gitem" onclick='openLightbox(${JSON.stringify(photos)}, ${i}, "")'><img src="${p}"></div>`).join('')}
+    </div>` : ''}
+  `;
+  openOverlay();
+}
+
+/* ================= GALERI ================= */
+function viewGaleri(){
+  const cats = ['Semua', ...new Set(GAL.map(g=>g.category))];
+  const filtered = galFilter==='Semua' ? GAL : GAL.filter(g=>g.category===galFilter);
+  return `
+  <div class="section"><div class="section-head"><h2>Galeri Foto</h2></div></div>
+  <div class="chip-row">${cats.map(c=>`<div class="chip ${galFilter===c?'active':''}" onclick="setGalFilter('${c}')">${esc(c)}</div>`).join('')}</div>
+  <div class="gal-grid">
+    ${filtered.map((g,i)=>`
+      <div class="gitem" onclick='openLightbox(${JSON.stringify(filtered.map(x=>x.image))}, ${i}, ${JSON.stringify(g.caption)})'>
+        <img src="${g.image}">
+      </div>`).join('') || ''}
+  </div>
+  ${filtered.length===0? '<div class="empty"><b>Belum ada foto</b>Galeri akan segera diisi oleh admin.</div>':''}
+  `;
+}
+function setGalFilter(c){ galFilter=c; render(); }
+
+/* ================= KONTAK ================= */
+function viewKontak(){
+  return `
+  <div class="section"><div class="section-head"><h2>Hubungi Kami</h2></div></div>
+  <div class="contact-row" onclick="window.open('https://wa.me/${esc(CFG.wa)}?text=Halo%20PK%20KNPI%20Cibinong','_blank')">
+    <div class="cico">${ICONS.wa}</div>
+    <div class="ctext"><b>WhatsApp</b><span>${esc(CFG.telp)}</span></div>
+  </div>
+  <div class="contact-row" onclick="window.open('mailto:${esc(CFG.email)}')">
+    <div class="cico">${ICONS.mail}</div>
+    <div class="ctext"><b>Email</b><span>${esc(CFG.email)}</span></div>
+  </div>
+  <div class="contact-row" onclick="window.open('https://instagram.com/${esc(CFG.ig)}','_blank')">
+    <div class="cico">${ICONS.ig}</div>
+    <div class="ctext"><b>Instagram</b><span>@${esc(CFG.ig)}</span></div>
+  </div>
+  <div class="contact-row" onclick="window.open('https://facebook.com/${esc(CFG.fb)}','_blank')">
+    <div class="cico">${ICONS.fb}</div>
+    <div class="ctext"><b>Facebook</b><span>${esc(CFG.fb)}</span></div>
+  </div>
+  <div class="contact-row">
+    <div class="cico">${ICONS.pin}</div>
+    <div class="ctext"><b>Alamat Sekretariat</b><span>${esc(CFG.alamat)}</span></div>
+  </div>
+
+  <div class="map-wrap">
+    <iframe src="https://www.google.com/maps?q=${encodeURIComponent(CFG.mapQuery)}&z=16&output=embed" loading="lazy"></iframe>
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Kirim Pesan</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Nama</label><input type="text" id="ctName" placeholder="Nama lengkap"></div>
+    <div class="field"><label>No. WhatsApp / Email</label><input type="text" id="ctPhone" placeholder="Kontak yang bisa dihubungi"></div>
+    <div class="field"><label>Pesan</label><textarea id="ctMsg" placeholder="Tulis pesan Anda..."></textarea></div>
+    <button class="btn btn-primary btn-block" onclick="submitContact()">Kirim Pesan</button>
+  </div>
+  `;
+}
+async function submitContact(){
+  const name = document.getElementById('ctName').value.trim();
+  const phone = document.getElementById('ctPhone').value.trim();
+  const msg = document.getElementById('ctMsg').value.trim();
+  if(!name || !msg){ toast('Nama dan pesan wajib diisi'); return; }
+  MSG.unshift({id:uid(), name, phone, message:msg, date:new Date().toISOString(), read:false});
+  await saveMsg();
+  toast('Pesan terkirim, terima kasih!');
+  render();
+}
+
+/* ================= OVERLAY / LIGHTBOX ================= */
+function openOverlay(){ document.getElementById('overlayDetail').classList.add('open'); }
+function closeOverlay(){ document.getElementById('overlayDetail').classList.remove('open'); }
+function openLightbox(list, idx, cap){
+  lbList = list; lbIdx = idx;
+  document.getElementById('lbImg').src = lbList[lbIdx];
+  document.getElementById('lbCap').textContent = cap||'';
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('show'); }
+function lbNav(dir){
+  lbIdx = (lbIdx + dir + lbList.length) % lbList.length;
+  document.getElementById('lbImg').src = lbList[lbIdx];
+}
+
+/* ================= ADMIN ================= */
+function viewAdmin(){
+  if(!adminAuthed){
+    return `
+    <div class="lock-screen">
+      <div class="li">${ICONS.lock}</div>
+      <h2 style="font-size:16px; margin-bottom:6px;">Panel Admin</h2>
+      <p style="font-size:12px; color:var(--muted); margin-bottom:20px;">Masukkan kata sandi untuk mengelola konten situs.</p>
+      <div class="field" style="text-align:left"><input type="password" id="adminPass" placeholder="Kata sandi admin"></div>
+      <button class="btn btn-primary btn-block" onclick="tryLogin()">Masuk</button>
+    </div>`;
+  }
+  const tabs=[['berita','Berita'],['kegiatan','Kegiatan'],['galeri','Galeri'],['tentang','Tentang Kami'],['pengaturan','Pengaturan'],['pesan','Pesan'+(MSG.filter(m=>!m.read).length?` (${MSG.filter(m=>!m.read).length})`:'')]];
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px 0;">
+    <span style="font-size:13px; font-weight:700;">Dashboard Admin</span>
+    <button class="btn btn-sm btn-danger" onclick="adminLogout()">${ICONS.logout} Keluar</button>
+  </div>
+  <div class="tabbar">${tabs.map(t=>`<button class="${adminTab===t[0]?'active':''}" onclick="setAdminTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
+  <div id="adminContent">${renderAdminTab()}</div>
+  `;
+}
+function setAdminTab(t){ adminTab=t; editingNews=null; editingAct=null; editingPerson=null; render(); }
+function tryLogin(){
+  const v = document.getElementById('adminPass').value;
+  if(v===ADMIN_PASSWORD){ adminAuthed=true; toast('Berhasil masuk'); render(); }
+  else toast('Kata sandi salah');
+}
+function adminLogout(){ adminAuthed=false; go('beranda'); }
+
+function renderAdminTab(){
+  if(adminTab==='berita') return adminBerita();
+  if(adminTab==='kegiatan') return adminKegiatan();
+  if(adminTab==='galeri') return adminGaleri();
+  if(adminTab==='tentang') return adminTentang();
+  if(adminTab==='pengaturan') return adminPengaturan();
+  if(adminTab==='pesan') return adminPesan();
+  return '';
+}
+
+/* -- Admin: Berita -- */
+function adminBerita(){
+  const f = editingNews;
+  return `
+  <div class="section"><div class="section-head"><h2>${f? (f.id?'Edit Berita':'Tambah Berita') : 'Daftar Berita'}</h2>
+    ${!f?`<span class="more" onclick="newNewsForm()">${ICONS.plus.replace('width','style="vertical-align:-2px" width').replace('<svg','<svg width="12" height="12"')} Tambah</span>`:''}</div></div>
+  ${f ? `
+    <div class="card">
+      <div class="field"><label>Foto Sampul</label>
+        <div class="upload-box">
+          ${f.image?`<img class="upload-preview" src="${f.image}">`:''}
+          Ketuk untuk unggah foto
+          <input type="file" accept="image/*" onchange="handleNewsImg(event)">
+        </div>
+      </div>
+      <div class="field"><label>Kategori</label>
+        <select id="nfCat"><option ${f.category==='Umum'?'selected':''}>Umum</option><option ${f.category==='Kegiatan'?'selected':''}>Kegiatan</option><option ${f.category==='Pengumuman'?'selected':''}>Pengumuman</option></select>
+      </div>
+      <div class="field"><label>Judul</label><input type="text" id="nfTitle" value="${esc(f.title)}"></div>
+      <div class="field"><label>Ringkasan Singkat</label><textarea id="nfExcerpt">${esc(f.excerpt)}</textarea></div>
+      <div class="field"><label>Isi Berita</label><textarea id="nfContent" style="min-height:140px">${esc(f.content)}</textarea></div>
+      <div class="field"><label>Tanggal</label><input type="date" id="nfDate" value="${f.date||new Date().toISOString().slice(0,10)}"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline btn-block" onclick="cancelNewsForm()">Batal</button>
+        <button class="btn btn-primary btn-block" onclick="saveNewsForm()">Simpan</button>
+      </div>
+    </div>
+  ` : (NEWS.length? [...NEWS].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(n=>`
+    <div class="admin-item">
+      <img src="${n.image}">
+      <div class="ai-info"><b>${esc(n.title)}</b><span>${esc(n.category)} &bull; ${fmtDate(n.date)}</span></div>
+      <div class="ai-actions">
+        <button class="icon-mini" onclick="editNewsForm('${n.id}')">${ICONS.edit}</button>
+        <button class="icon-mini" onclick="deleteNews('${n.id}')">${ICONS.trash}</button>
+      </div>
+    </div>`).join('') : '<div class="empty">Belum ada berita. Tambahkan yang pertama.</div>')}
+  `;
+}
+function newNewsForm(){ editingNews={category:'Umum', title:'', excerpt:'', content:'', image:'', date:new Date().toISOString().slice(0,10)}; render(); }
+function editNewsForm(id){ editingNews = {...NEWS.find(n=>n.id===id)}; render(); }
+function cancelNewsForm(){ editingNews=null; render(); }
+async function handleNewsImg(e){
+  const file = e.target.files[0]; if(!file) return;
+  const url = await resizeImage(file, 900, 0.72);
+  editingNews.image = url; render();
+}
+async function saveNewsForm(){
+  const title = document.getElementById('nfTitle').value.trim();
+  if(!title){ toast('Judul wajib diisi'); return; }
+  const data = {
+    id: editingNews.id || uid(),
+    category: document.getElementById('nfCat').value,
+    title,
+    excerpt: document.getElementById('nfExcerpt').value.trim(),
+    content: document.getElementById('nfContent').value.trim(),
+    date: document.getElementById('nfDate').value || new Date().toISOString().slice(0,10),
+    image: editingNews.image || placeholderImg('Berita','#0B3D91','#1E5FBF')
+  };
+  const idx = NEWS.findIndex(n=>n.id===data.id);
+  if(idx>=0) NEWS[idx]=data; else NEWS.unshift(data);
+  await saveNews();
+  editingNews=null; toast('Berita disimpan'); render();
+}
+async function deleteNews(id){
+  NEWS = NEWS.filter(n=>n.id!==id); await saveNews(); toast('Berita dihapus'); render();
+}
+
+/* -- Admin: Kegiatan -- */
+function adminKegiatan(){
+  const f = editingAct;
+  return `
+  <div class="section"><div class="section-head"><h2>${f? (f.id?'Edit Kegiatan':'Tambah Kegiatan') : 'Daftar Kegiatan'}</h2>
+    ${!f?`<span class="more" onclick="newActForm()">+ Tambah</span>`:''}</div></div>
+  ${f ? `
+    <div class="card">
+      <div class="field"><label>Foto Sampul</label>
+        <div class="upload-box">
+          ${f.cover?`<img class="upload-preview" src="${f.cover}">`:''}
+          Ketuk untuk unggah foto sampul
+          <input type="file" accept="image/*" onchange="handleActCover(event)">
+        </div>
+      </div>
+      <div class="field"><label>Judul Kegiatan</label><input type="text" id="afTitle" value="${esc(f.title)}"></div>
+      <div class="field"><label>Tanggal</label><input type="date" id="afDate" value="${f.date||new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>Lokasi</label><input type="text" id="afLoc" value="${esc(f.location||'')}"></div>
+      <div class="field"><label>Deskripsi</label><textarea id="afDesc">${esc(f.desc||'')}</textarea></div>
+      <div class="field"><label>Foto Dokumentasi (bisa lebih dari satu)</label>
+        <div class="upload-box">Ketuk untuk tambah foto<input type="file" accept="image/*" multiple onchange="handleActPhotos(event)"></div>
+        <div class="photo-mini-grid">
+          ${(f.photos||[]).map((p,i)=>`<div class="pm"><img src="${p}"><button onclick="removeActPhoto(${i})">✕</button></div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline btn-block" onclick="cancelActForm()">Batal</button>
+        <button class="btn btn-primary btn-block" onclick="saveActForm()">Simpan</button>
+      </div>
+    </div>
+  ` : (ACT.length? [...ACT].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(a=>`
+    <div class="admin-item">
+      <img src="${a.cover}">
+      <div class="ai-info"><b>${esc(a.title)}</b><span>${fmtDate(a.date)} &bull; ${(a.photos||[]).length} foto</span></div>
+      <div class="ai-actions">
+        <button class="icon-mini" onclick="editActForm('${a.id}')">${ICONS.edit}</button>
+        <button class="icon-mini" onclick="deleteAct('${a.id}')">${ICONS.trash}</button>
+      </div>
+    </div>`).join('') : '<div class="empty">Belum ada kegiatan.</div>')}
+  `;
+}
+function newActForm(){ editingAct={title:'', date:new Date().toISOString().slice(0,10), location:'', desc:'', cover:'', photos:[]}; render(); }
+function editActForm(id){ editingAct = JSON.parse(JSON.stringify(ACT.find(a=>a.id===id))); render(); }
+function cancelActForm(){ editingAct=null; render(); }
+async function handleActCover(e){ const file=e.target.files[0]; if(!file) return; editingAct.cover = await resizeImage(file,900,0.72); render(); }
+async function handleActPhotos(e){
+  const files=[...e.target.files]; if(!files.length) return;
+  editingAct.photos = editingAct.photos||[];
+  for(const f of files){ editingAct.photos.push(await resizeImage(f, 800, 0.68)); }
+  render();
+}
+function removeActPhoto(i){ editingAct.photos.splice(i,1); render(); }
+async function saveActForm(){
+  const title = document.getElementById('afTitle').value.trim();
+  if(!title){ toast('Judul wajib diisi'); return; }
+  const data = {
+    id: editingAct.id || uid(),
+    title,
+    date: document.getElementById('afDate').value || new Date().toISOString().slice(0,10),
+    location: document.getElementById('afLoc').value.trim(),
+    desc: document.getElementById('afDesc').value.trim(),
+    cover: editingAct.cover || placeholderImg('Kegiatan','#0B3D91','#1E5FBF'),
+    photos: editingAct.photos||[]
+  };
+  const idx = ACT.findIndex(a=>a.id===data.id);
+  if(idx>=0) ACT[idx]=data; else ACT.unshift(data);
+  await saveAct();
+  editingAct=null; toast('Kegiatan disimpan'); render();
+}
+async function deleteAct(id){ ACT = ACT.filter(a=>a.id!==id); await saveAct(); toast('Kegiatan dihapus'); render(); }
+
+/* -- Admin: Galeri -- */
+function adminGaleri(){
+  return `
+  <div class="section"><div class="section-head"><h2>Tambah Foto Galeri</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Kategori</label><input type="text" id="gfCat" placeholder="Contoh: Kegiatan, Rapat, Sosial"></div>
+    <div class="field"><label>Keterangan Foto</label><input type="text" id="gfCap" placeholder="Keterangan singkat"></div>
+    <div class="field"><label>Unggah Foto (bisa lebih dari satu)</label>
+      <div class="upload-box">Ketuk untuk pilih foto<input type="file" accept="image/*" multiple onchange="handleGalUpload(event)"></div>
+    </div>
+  </div>
+  <div class="section"><div class="section-head"><h2>Semua Foto (${GAL.length})</h2></div></div>
+  <div class="gal-grid">
+    ${GAL.map(g=>`
+      <div class="gitem">
+        <img src="${g.image}">
+        <button class="icon-mini" style="position:absolute; top:4px; right:4px; width:22px; height:22px; background:rgba(0,0,0,.55); color:#fff;" onclick="deleteGal('${g.id}')">${ICONS.trash.replace('width="24" height="24"','width="12" height="12"')}</button>
+      </div>`).join('') || ''}
+  </div>
+  ${GAL.length===0?'<div class="empty">Galeri masih kosong.</div>':''}
+  `;
+}
+async function handleGalUpload(e){
+  const files=[...e.target.files]; if(!files.length) return;
+  const cat = document.getElementById('gfCat').value.trim() || 'Umum';
+  const cap = document.getElementById('gfCap').value.trim();
+  for(const f of files){
+    const img = await resizeImage(f, 800, 0.68);
+    GAL.unshift({id:uid(), image:img, caption:cap, category:cat});
+  }
+  await saveGal();
+  toast('Foto ditambahkan'); render();
+}
+async function deleteGal(id){ GAL = GAL.filter(g=>g.id!==id); await saveGal(); toast('Foto dihapus'); render(); }
+
+/* -- Admin: Tentang Kami -- */
+function adminTentang(){
+  const p = editingPerson;
+  return `
+  <div class="section"><div class="section-head"><h2>Visi</h2></div></div>
+  <div class="card"><textarea id="atVisi" style="min-height:80px; width:100%; border:1.5px solid var(--border); border-radius:11px; padding:10px 12px; font-size:12.5px; font-family:inherit;">${esc(CFG.visi)}</textarea></div>
+
+  <div class="section"><div class="section-head"><h2>Misi</h2><span class="more" onclick="addMisi()">+ Tambah poin</span></div></div>
+  <div class="card">
+    ${CFG.misi.map((m,i)=>`
+      <div class="field" style="display:flex; gap:6px; align-items:flex-start;">
+        <textarea style="flex:1" oninput="CFG.misi[${i}]=this.value">${esc(m)}</textarea>
+        <button class="icon-mini" onclick="removeMisi(${i})">${ICONS.trash}</button>
+      </div>`).join('')}
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Profil Organisasi</h2></div></div>
+  <div class="card"><textarea id="atProfil" style="min-height:140px; width:100%; border:1.5px solid var(--border); border-radius:11px; padding:10px 12px; font-size:12.5px; font-family:inherit;">${esc(CFG.profil)}</textarea></div>
+
+  <div class="section"><div class="section-head"><h2>Struktur Organisasi</h2><span class="more" onclick="addPerson()">+ Tambah</span></div></div>
+  ${CFG.struktur.map(pr=>`
+    <div class="admin-item">
+      <div class="logo-badge" style="border-radius:50%;">${pr.photo?`<img src="${pr.photo}">`:esc((pr.name||'?').trim().split(' ').map(w=>w[0]).slice(0,2).join(''))}</div>
+      <div class="ai-info"><b>${esc(pr.name)}</b><span>${esc(pr.jabatan)}</span></div>
+      <div class="ai-actions">
+        <button class="icon-mini" onclick="editPerson(${pr.id})">${ICONS.edit}</button>
+        <button class="icon-mini" onclick="removePerson(${pr.id})">${ICONS.trash}</button>
+      </div>
+    </div>`).join('')}
+
+  ${p ? `
+  <div class="card">
+    <h3>${p.isNew?'Tambah Pengurus':'Edit Pengurus'}</h3>
+    <div class="field"><label>Foto (opsional)</label>
+      <div class="upload-box">${p.photo?`<img class="upload-preview" src="${p.photo}">`:''}Ketuk untuk unggah<input type="file" accept="image/*" onchange="handlePersonPhoto(event)"></div>
+    </div>
+    <div class="field"><label>Nama</label><input type="text" id="pfName" value="${esc(p.name)}"></div>
+    <div class="field"><label>Jabatan</label><input type="text" id="pfJabatan" value="${esc(p.jabatan)}"></div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline btn-block" onclick="editingPerson=null; render()">Batal</button>
+      <button class="btn btn-primary btn-block" onclick="savePerson()">Simpan</button>
+    </div>
+  </div>` : ''}
+
+  <div style="padding:0 16px 20px">
+    <button class="btn btn-primary btn-block" onclick="saveAboutText()">Simpan Visi, Misi &amp; Profil</button>
+  </div>
+  `;
+}
+function addMisi(){ CFG.misi.push('Poin misi baru'); render(); }
+function removeMisi(i){ CFG.misi.splice(i,1); render(); }
+async function saveAboutText(){
+  CFG.visi = document.getElementById('atVisi').value.trim();
+  CFG.profil = document.getElementById('atProfil').value.trim();
+  await saveConfig(); toast('Perubahan disimpan'); render();
+}
+function addPerson(){ editingPerson={id:Date.now(), name:'', jabatan:'', photo:null, isNew:true}; render(); }
+function editPerson(id){ editingPerson = {...CFG.struktur.find(p=>p.id===id)}; render(); }
+async function handlePersonPhoto(e){ const file=e.target.files[0]; if(!file) return; editingPerson.photo = await resizeImage(file, 400, 0.75); render(); }
+async function savePerson(){
+  const name = document.getElementById('pfName').value.trim();
+  if(!name){ toast('Nama wajib diisi'); return; }
+  const data = {id:editingPerson.id, name, jabatan:document.getElementById('pfJabatan').value.trim(), photo:editingPerson.photo||null};
+  const idx = CFG.struktur.findIndex(p=>p.id===data.id);
+  if(idx>=0) CFG.struktur[idx]=data; else CFG.struktur.push(data);
+  await saveConfig(); editingPerson=null; toast('Pengurus disimpan'); render();
+}
+async function removePerson(id){ CFG.struktur = CFG.struktur.filter(p=>p.id!==id); await saveConfig(); toast('Dihapus'); render(); }
+
+/* -- Admin: Pengaturan -- */
+function adminPengaturan(){
+  return `
+  <div class="section"><div class="section-head"><h2>Identitas Situs</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Logo</label>
+      <div class="upload-box">
+        ${CFG.logo?`<img class="upload-preview" src="${CFG.logo}" style="max-height:80px; width:auto; margin:0 auto 8px;">`:''}
+        Ketuk untuk unggah logo<input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+      </div>
+      ${CFG.logo?`<button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="CFG.logo=null; render()">Hapus logo (pakai inisial)</button>`:''}
+    </div>
+    <div class="field"><label>Singkatan (untuk badge jika tanpa logo)</label><input type="text" id="stShort" value="${esc(CFG.orgShort)}" maxlength="3"></div>
+    <div class="field"><label>Nama Organisasi</label><input type="text" id="stName" value="${esc(CFG.orgName)}"></div>
+    <div class="field"><label>Nama Lengkap</label><input type="text" id="stFull" value="${esc(CFG.orgFull)}"></div>
+    <div class="field"><label>Tagline (header)</label><input type="text" id="stTagline" value="${esc(CFG.tagline)}"></div>
+    <div class="field"><label>Judul Hero (beranda)</label><input type="text" id="stHeroTitle" value="${esc(CFG.heroTitle)}"></div>
+    <div class="field"><label>Subjudul Hero</label><textarea id="stHeroSub">${esc(CFG.heroSubtitle)}</textarea></div>
+    <div class="field"><label>Statistik Beranda</label>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+        <input type="text" id="stat1" value="${esc(CFG.stat1)}" placeholder="Angka">
+        <input type="text" id="stat2" value="${esc(CFG.stat2)}" placeholder="Angka">
+        <input type="text" id="stat3" value="${esc(CFG.stat3)}" placeholder="Angka">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:6px;">
+        <input type="text" id="stat1L" value="${esc(CFG.stat1Label)}" placeholder="Label">
+        <input type="text" id="stat2L" value="${esc(CFG.stat2Label)}" placeholder="Label">
+        <input type="text" id="stat3L" value="${esc(CFG.stat3Label)}" placeholder="Label">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveIdentity()">Simpan Identitas</button>
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Kontak &amp; Lokasi</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Alamat Sekretariat</label><textarea id="stAlamat">${esc(CFG.alamat)}</textarea></div>
+    <div class="field"><label>No. Telepon / WhatsApp (format 62)</label><input type="text" id="stTelp" value="${esc(CFG.telp)}"></div>
+    <div class="field"><label>Nomor WA untuk tombol chat (format 62xxxx)</label><input type="text" id="stWa" value="${esc(CFG.wa)}"></div>
+    <div class="field"><label>Email</label><input type="text" id="stEmail" value="${esc(CFG.email)}"></div>
+    <div class="field"><label>Username Instagram</label><input type="text" id="stIg" value="${esc(CFG.ig)}"></div>
+    <div class="field"><label>Nama Halaman Facebook</label><input type="text" id="stFb" value="${esc(CFG.fb)}"></div>
+    <div class="field"><label>Koordinat Peta (lat,lng)</label><input type="text" id="stMapQ" value="${esc(CFG.mapQuery)}"></div>
+    <div class="field"><label>Link Google Maps (tombol "Buka di Maps")</label><input type="text" id="stMapLink" value="${esc(CFG.mapLink)}"></div>
+    <button class="btn btn-primary btn-block" onclick="saveContactSettings()">Simpan Kontak &amp; Lokasi</button>
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Pilih Tema Warna</h2></div></div>
+  <div class="theme-grid">
+    ${THEMES.map(t=>`
+      <div class="theme-swatch ${CFG.theme===t.id?'selected':''}" onclick="chooseTheme('${t.id}')">
+        <div class="dots">${t.colors.map(c=>`<div class="dot" style="background:${c}"></div>`).join('')}</div>
+        <b>${t.name}</b>
+      </div>`).join('')}
+  </div>
+  `;
+}
+async function handleLogoUpload(e){ const file=e.target.files[0]; if(!file) return; CFG.logo = await resizeImage(file, 300, 0.85); await saveConfig(); toast('Logo diperbarui'); render(); }
+async function saveIdentity(){
+  CFG.orgShort = document.getElementById('stShort').value.trim() || 'KC';
+  CFG.orgName = document.getElementById('stName').value.trim();
+  CFG.orgFull = document.getElementById('stFull').value.trim();
+  CFG.tagline = document.getElementById('stTagline').value.trim();
+  CFG.heroTitle = document.getElementById('stHeroTitle').value.trim();
+  CFG.heroSubtitle = document.getElementById('stHeroSub').value.trim();
+  CFG.stat1 = document.getElementById('stat1').value.trim();
+  CFG.stat2 = document.getElementById('stat2').value.trim();
+  CFG.stat3 = document.getElementById('stat3').value.trim();
+  CFG.stat1Label = document.getElementById('stat1L').value.trim();
+  CFG.stat2Label = document.getElementById('stat2L').value.trim();
+  CFG.stat3Label = document.getElementById('stat3L').value.trim();
+  await saveConfig(); toast('Identitas disimpan'); render();
+}
+async function saveContactSettings(){
+  CFG.alamat = document.getElementById('stAlamat').value.trim();
+  CFG.telp = document.getElementById('stTelp').value.trim();
+  CFG.wa = document.getElementById('stWa').value.trim();
+  CFG.email = document.getElementById('stEmail').value.trim();
+  CFG.ig = document.getElementById('stIg').value.trim();
+  CFG.fb = document.getElementById('stFb').value.trim();
+  CFG.mapQuery = document.getElementById('stMapQ').value.trim();
+  CFG.mapLink = document.getElementById('stMapLink').value.trim();
+  await saveConfig(); toast('Kontak & lokasi disimpan'); render();
+}
+async function chooseTheme(id){ CFG.theme=id; await saveConfig(); render(); toast('Tema diterapkan'); }
+
+/* -- Admin: Pesan -- */
+function adminPesan(){
+  return `
+  <div class="section"><div class="section-head"><h2>Pesan Masuk (${MSG.length})</h2></div></div>
+  ${MSG.length? MSG.map(m=>`
+    <div class="card" style="${m.read?'':'border-color:var(--primary)'}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+        <div><b style="font-size:12.5px">${esc(m.name)}</b><div style="font-size:10.5px; color:var(--muted)">${esc(m.phone||'-')}</div></div>
+        <button class="icon-mini" onclick="deleteMsg('${m.id}')">${ICONS.trash}</button>
+      </div>
+      <p style="font-size:12px; line-height:1.6;">${esc(m.message)}</p>
+      <div style="font-size:10px; color:var(--muted); margin-top:8px;">${new Date(m.date).toLocaleString('id-ID')}</div>
+    </div>`).join('') : '<div class="empty"><b>Belum ada pesan</b>Pesan dari pengunjung akan tampil di sini.</div>'}
+  `;
+}
+async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); render(); }
+
+/* ================= INIT ================= */
+(async function init(){
+  await loadAll();
+  if(location.hash === SECRET_HASH){ page = 'admin'; history.replaceState(null,'',location.pathname); }
+  render();
+})();
+</script>
+</body>
+</html>
