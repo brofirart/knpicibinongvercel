@@ -341,44 +341,128 @@ a{color:inherit; text-decoration:none;}
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
-/* ================= PENYIMPANAN DATA (BACKEND REDIS) =================
+/* ================= PENYIMPANAN DATA (FIREBASE FIRESTORE) =================
    Situs ini awalnya dibuat sebagai Claude Artifact yang memakai
    window.storage bawaan Claude. Saat di-host mandiri (Vercel), storage
-   itu tidak ada, jadi di sini window.storage dibuat ulang agar
-   memanggil API /api/storage yang tersambung ke database Redis
-   (Upstash), supaya semua data yang diubah lewat panel admin
-   tersimpan permanen dan terlihat oleh semua pengunjung. */
+   itu tidak ada, jadi di sini window.storage dibuat ulang agar memakai
+   Firebase Firestore langsung dari browser (tanpa perlu API route atau
+   environment variable di Vercel), supaya semua data yang diubah lewat
+   panel admin tersimpan permanen dan terlihat oleh semua pengunjung.
+
+   CARA SETUP (sekali saja):
+   1) Buka https://console.firebase.google.com, buat project baru (gratis).
+   2) Di project itu, klik "Build" > "Firestore Database" > "Create database"
+      > pilih lokasi terdekat (misalnya asia-southeast1/2) > mode
+      "Start in test mode" (supaya bisa langsung baca/tulis).
+   3) Klik ikon gerigi (Project settings) > scroll ke "Your apps" > klik
+      ikon "</>" (Web) > daftarkan app (nama bebas) > Firebase akan
+      menampilkan objek firebaseConfig seperti di bawah ini.
+   4) Copy nilai apiKey, authDomain, projectId, dst dari Firebase, lalu
+      ganti nilai FIREBASE_CONFIG di bawah ini dengan nilai Anda.
+   5) (Opsional tapi disarankan setelah situs jalan) Di Firestore >
+      tab "Rules", ganti supaya hanya bisa ditulis, bukan sembarang
+      orang di internet bisa mengubah data lewat konsol browser. Untuk
+      situs sederhana seperti ini, rules default "test mode" (berlaku
+      30 hari lalu terkunci) sudah cukup untuk mulai; setelah itu perlu
+      diperpanjang manual di tab Rules Firestore (klik "Publish" lagi). */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDwRGLg8qo3ns8_RSQLMrXe3oG7r0w1--s",
+  authDomain: "pkknpicibinong.firebaseapp.com",
+  projectId: "pkknpicibinong",
+  storageBucket: "pkknpicibinong.firebasestorage.app",
+  messagingSenderId: "50353718742",
+  appId: "1:50353718742:web:fd216bf1991e65451ed077",
+};
+
+const _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+const _fbDb = firebase.firestore();
+const _FB_COLLECTION = 'knpicibinong'; // semua data disimpan di koleksi ini, 1 dokumen per key
+const _FB_CHUNK_SIZE = 700000; // batas aman per dokumen (Firestore max ~1MB/dokumen)
+
+/* Firestore membatasi ukuran 1 dokumen sekitar 1MB. Karena berita/galeri
+   di situs ini menyimpan foto sebagai teks base64 (bisa jadi besar kalau
+   ada beberapa foto sekaligus), data seperti itu perlu dipecah otomatis
+   menjadi beberapa dokumen kecil ("chunk") supaya tidak ditolak Firestore.
+   Fungsi di bawah ini menangani pemecahan & penggabungan itu secara
+   transparan, sehingga kode admin (saveNews, saveGal, dst) tidak perlu
+   diubah sama sekali. */
 window.storage = {
   async get(key){
-    const res = await fetch('/api/storage?key=' + encodeURIComponent(key));
-    if(!res.ok) return null;
-    const data = await res.json();
-    if(data.value === null || data.value === undefined) return null;
-    return { key, value: data.value, shared: true };
+    try{
+      const doc = await _fbDb.collection(_FB_COLLECTION).doc(key).get();
+      if(!doc.exists) return null;
+      const data = doc.data();
+      if(data && data.chunked){
+        const count = data.count || 0;
+        const parts = await Promise.all(
+          Array.from({length: count}, (_, i) =>
+            _fbDb.collection(_FB_COLLECTION).doc(key + '__chunk_' + i).get()
+          )
+        );
+        const value = parts.map(p => (p.exists ? p.data().part : '')).join('');
+        return { key, value, shared: true };
+      }
+      if(data.value === null || data.value === undefined) return null;
+      return { key, value: data.value, shared: true };
+    }catch(e){ console.error('storage.get error', e); return null; }
   },
   async set(key, value){
-    const res = await fetch('/api/storage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key, value })
-    });
-    if(!res.ok) return null;
-    return { key, value, shared: true };
+    try{
+      const str = typeof value === 'string' ? value : JSON.stringify(value);
+      // Hapus dulu chunk lama (kalau sebelumnya dokumen ini pernah di-chunk
+      // dengan jumlah lebih banyak), supaya tidak ada sisa data basi.
+      const oldDoc = await _fbDb.collection(_FB_COLLECTION).doc(key).get();
+      const oldCount = (oldDoc.exists && oldDoc.data().chunked) ? (oldDoc.data().count || 0) : 0;
+
+      if(str.length > _FB_CHUNK_SIZE){
+        const chunks = [];
+        for(let i=0; i<str.length; i+=_FB_CHUNK_SIZE) chunks.push(str.slice(i, i+_FB_CHUNK_SIZE));
+        const batch = _fbDb.batch();
+        chunks.forEach((part, i) => {
+          batch.set(_fbDb.collection(_FB_COLLECTION).doc(key + '__chunk_' + i), { part });
+        });
+        for(let i=chunks.length; i<oldCount; i++){
+          batch.delete(_fbDb.collection(_FB_COLLECTION).doc(key + '__chunk_' + i));
+        }
+        batch.set(_fbDb.collection(_FB_COLLECTION).doc(key), { chunked: true, count: chunks.length, updatedAt: Date.now() });
+        await batch.commit();
+      } else {
+        const batch = _fbDb.batch();
+        for(let i=0; i<oldCount; i++){
+          batch.delete(_fbDb.collection(_FB_COLLECTION).doc(key + '__chunk_' + i));
+        }
+        batch.set(_fbDb.collection(_FB_COLLECTION).doc(key), { value, chunked: false, updatedAt: Date.now() });
+        await batch.commit();
+      }
+      return { key, value, shared: true };
+    }catch(e){ console.error('storage.set error', e); toast && toast('Gagal menyimpan: ' + (e.message||e)); return null; }
   },
   async delete(key){
-    const res = await fetch('/api/storage', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key })
-    });
-    if(!res.ok) return null;
-    return { key, deleted: true, shared: true };
+    try{
+      const oldDoc = await _fbDb.collection(_FB_COLLECTION).doc(key).get();
+      const oldCount = (oldDoc.exists && oldDoc.data().chunked) ? (oldDoc.data().count || 0) : 0;
+      const batch = _fbDb.batch();
+      for(let i=0; i<oldCount; i++){
+        batch.delete(_fbDb.collection(_FB_COLLECTION).doc(key + '__chunk_' + i));
+      }
+      batch.delete(_fbDb.collection(_FB_COLLECTION).doc(key));
+      await batch.commit();
+      return { key, deleted: true, shared: true };
+    }catch(e){ console.error('storage.delete error', e); return null; }
   },
   async list(prefix){
-    const res = await fetch('/api/storage-list?prefix=' + encodeURIComponent(prefix || ''));
-    if(!res.ok) return null;
-    return await res.json();
+    try{
+      const snap = await _fbDb.collection(_FB_COLLECTION).get();
+      const keys = [];
+      snap.forEach(doc => {
+        if(doc.id.includes('__chunk_')) return; // sembunyikan dokumen pecahan internal
+        if(!prefix || doc.id.startsWith(prefix)) keys.push(doc.id);
+      });
+      return { keys, prefix: prefix || undefined, shared: true };
+    }catch(e){ console.error('storage.list error', e); return null; }
   }
 };
 
