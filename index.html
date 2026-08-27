@@ -152,7 +152,7 @@ a{color:inherit; text-decoration:none;}
 .hscroll{display:flex; gap:11px; overflow-x:auto; padding:2px 16px 10px;}
 .card-news{
   min-width:190px; max-width:190px; background:var(--surface); border-radius:16px; overflow:hidden;
-  border:1px solid var(--border); flex-shrink:0;
+  border:1px solid var(--border); flex-shrink:0; position:relative;
 }
 .card-news .thumb{height:96px; width:100%; object-fit:cover; background:var(--surface-2);}
 .card-news .body{padding:9px 10px 11px;}
@@ -275,6 +275,33 @@ a{color:inherit; text-decoration:none;}
 #lightbox .lb-nav{position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15); color:#fff; border:none; font-size:16px;}
 #lightbox .lb-prev{left:10px;} #lightbox .lb-next{right:10px;}
 
+/* share sheet */
+#shareSheet{position:absolute; inset:0; z-index:320; display:none;}
+#shareSheet.show{display:block;}
+#shareSheet .share-backdrop{position:absolute; inset:0; background:rgba(5,8,16,.55);}
+#shareSheet .share-panel{
+  position:absolute; left:0; right:0; bottom:0; background:var(--surface);
+  border-radius:18px 18px 0 0; padding:14px 16px 22px; transform:translateY(100%);
+  transition:transform .28s ease; max-height:80vh; overflow-y:auto;
+}
+#shareSheet.show .share-panel{transform:translateY(0);}
+.share-sheet-handle{width:38px; height:4px; border-radius:3px; background:var(--border); margin:0 auto 12px;}
+.share-title{font-size:14px; font-weight:800; margin-bottom:14px; padding-right:20px; line-height:1.4;}
+.share-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px 8px; text-align:center;}
+.share-item{display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; font-family:inherit;}
+.share-item span:last-child{font-size:10.5px; color:var(--text); font-weight:600;}
+.share-ico{width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.share-ico svg{width:22px; height:22px;}
+.share-note{font-size:10.5px; color:var(--muted); line-height:1.6; margin-top:16px; border-top:1px solid var(--border); padding-top:12px;}
+.share-close-x{position:absolute; top:14px; right:16px; background:var(--surface-2); width:26px; height:26px; border-radius:50%; border:none; color:var(--text); font-size:13px; line-height:1;}
+.card-share-btn{
+  position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%;
+  background:rgba(0,0,0,.45); color:#fff; border:none; display:flex; align-items:center; justify-content:center; z-index:2;
+}
+.card-share-btn svg{width:14px; height:14px;}
+.overlay-head .share-btn{margin-left:auto; background:rgba(255,255,255,.15); border:none; color:#fff; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.overlay-head .share-btn svg{width:16px; height:16px;}
+
 /* admin */
 .tabbar{display:flex; gap:6px; overflow-x:auto; padding:12px 16px 4px;}
 .tabbar button{flex-shrink:0; padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface); font-size:11.5px; font-weight:700; color:var(--muted);}
@@ -323,6 +350,7 @@ a{color:inherit; text-decoration:none;}
         <div class="overlay-head">
           <button class="icon-btn" onclick="closeOverlay()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
           <h2 id="overlayTitle">Detail</h2>
+          <button class="share-btn" onclick="shareCurrent()" title="Bagikan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg></button>
         </div>
         <div class="overlay-body" id="overlayBody"></div>
       </div>
@@ -335,6 +363,15 @@ a{color:inherit; text-decoration:none;}
         <img id="lbImg" src="">
         <button class="lb-nav lb-next" onclick="lbNav(1)">›</button>
         <div class="lb-cap" id="lbCap"></div>
+      </div>
+
+      <div id="shareSheet">
+        <div class="share-backdrop" onclick="closeShareSheet()"></div>
+        <div class="share-panel">
+          <div class="share-sheet-handle"></div>
+          <button class="share-close-x" onclick="closeShareSheet()">✕</button>
+          <div id="shareSheetBody"></div>
+        </div>
       </div>
 
     </div>
@@ -487,6 +524,12 @@ const ICONS = {
   lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>',
   logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
   photo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="M21 15l-5-5L5 21"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',
+  telegram:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3L18.8 20c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9L18 7.3c.4-.3-.1-.5-.6-.2L7 13.2 2.3 11.7c-1-.3-1-1 .2-1.5l18.4-7.1c.8-.3 1.5.2 1 1.2z"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.2 8.3L23 22h-6.6l-5.2-6.8L5.2 22H2l7.7-8.8L1.5 2h6.8l4.7 6.2L18.9 2zm-1.1 18h1.8L7.3 4H5.4l12.4 16z"/></svg>',
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.5.5l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7.5-.5l-2 2a5 5 0 007 7l1-1"/></svg>',
+  tiktok:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8c-.9-.9-1.4-2.1-1.4-3.4h-3.1v13.6c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5c.3 0 .5 0 .8.1v-3.2c-.3 0-.5-.1-.8-.1-3.1 0-5.6 2.5-5.6 5.6s2.5 5.6 5.6 5.6 5.6-2.5 5.6-5.6V9.1c1.2.9 2.7 1.4 4.3 1.4V7.4c-1 0-1.9-.3-2.7-.9-.4-.2-.8-.5-1.2-.7z"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12s0-3.2-.4-4.7c-.2-.9-.9-1.6-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.5c-.9.2-1.6.9-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9.9 1.6 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.5c.9-.2 1.6-.9 1.8-1.8.4-1.5.4-4.7.4-4.7zM10 15.3V8.7l6 3.3-6 3.3z"/></svg>',
 };
 
 /* ================= DEFAULT DATA ================= */
@@ -745,6 +788,7 @@ function viewBeranda(){
   <div class="hscroll">
     ${latestNews.map(n=>`
       <div class="card-news" onclick="openNews('${n.id}')">
+        <button class="card-share-btn" onclick="event.stopPropagation(); shareNews('${n.id}')" title="Bagikan">${ICONS.share}</button>
         <img class="thumb" src="${n.image}">
         <div class="body">
           <span class="badge">${esc(n.category)}</span>
@@ -844,7 +888,7 @@ function viewBerita(){
         <span class="badge">${esc(n.category)}</span>
         <h3 style="margin-top:4px">${esc(n.title)}</h3>
         <p>${esc(n.excerpt)}</p>
-        <div class="meta">${fmtDate(n.date)}</div>
+        <div class="meta">${fmtDate(n.date)}<button class="icon-mini" style="width:22px;height:22px;margin-left:auto" onclick="event.stopPropagation(); shareNews('${n.id}')" title="Bagikan">${ICONS.share}</button></div>
       </div>
     </div>`).join('') || '<div class="empty"><b>Belum ada berita</b>Nantikan kabar terbaru dari kami.</div>'}
   `;
@@ -861,6 +905,8 @@ function openNews(id){
       <div class="meta">${fmtDate(n.date)}</div>
       <div class="content">${esc(n.content)}</div>
     </div>`;
+  _shareData = { title:n.title, text:(n.title+' — '+(CFG.orgName||'')), url:buildShareUrl('berita', n.id) };
+  history.replaceState(null,'',location.pathname+'#berita-'+n.id);
   openOverlay();
 }
 
@@ -875,7 +921,7 @@ function viewKegiatan(){
       <div class="info">
         <h3>${esc(a.title)}</h3>
         <p>${esc(a.desc)}</p>
-        <div class="meta">${fmtDate(a.date)} &bull; ${(a.photos||[]).length} foto</div>
+        <div class="meta">${fmtDate(a.date)} &bull; ${(a.photos||[]).length} foto<button class="icon-mini" style="width:22px;height:22px;margin-left:auto" onclick="event.stopPropagation(); shareActivity('${a.id}')" title="Bagikan">${ICONS.share}</button></div>
       </div>
     </div>`).join('') || '<div class="empty"><b>Belum ada kegiatan</b>Kegiatan mendatang akan tampil di sini.</div>'}
   `;
@@ -897,6 +943,8 @@ function openActivity(id){
       ${photos.map((p,i)=>`<div class="gitem" onclick='openLightbox(${JSON.stringify(photos)}, ${i}, "")'><img src="${p}"></div>`).join('')}
     </div>` : ''}
   `;
+  _shareData = { title:a.title, text:(a.title+' — '+(CFG.orgName||'')), url:buildShareUrl('kegiatan', a.id) };
+  history.replaceState(null,'',location.pathname+'#kegiatan-'+a.id);
   openOverlay();
 }
 
@@ -969,7 +1017,82 @@ async function submitContact(){
 
 /* ================= OVERLAY / LIGHTBOX ================= */
 function openOverlay(){ document.getElementById('overlayDetail').classList.add('open'); }
-function closeOverlay(){ document.getElementById('overlayDetail').classList.remove('open'); }
+function closeOverlay(){
+  document.getElementById('overlayDetail').classList.remove('open');
+  if(/^#(berita|kegiatan)-/.test(location.hash)) history.replaceState(null,'',location.pathname+location.search);
+  _shareData = null;
+}
+
+/* ================= SHARE ================= */
+let _shareData = null;
+function buildShareUrl(type, id){
+  return location.origin + location.pathname + '#' + type + '-' + id;
+}
+function shareNews(id){
+  const n = NEWS.find(x=>x.id===id); if(!n) return;
+  openShareSheet({ title:n.title, text:(n.title+' — '+(CFG.orgName||'')), url:buildShareUrl('berita', n.id) });
+}
+function shareActivity(id){
+  const a = ACT.find(x=>x.id===id); if(!a) return;
+  openShareSheet({ title:a.title, text:(a.title+' — '+(CFG.orgName||'')), url:buildShareUrl('kegiatan', a.id) });
+}
+function shareCurrent(){
+  if(_shareData) openShareSheet(_shareData);
+  else openShareSheet({ title:CFG.orgName||'PK KNPI Cibinong', text:CFG.orgName||'', url:location.origin+location.pathname });
+}
+async function openShareSheet(data){
+  _shareData = data;
+  if(navigator.share){
+    try{ await navigator.share({ title:data.title, text:data.text, url:data.url }); return; }
+    catch(e){ if(e && e.name==='AbortError') return; }
+  }
+  renderShareSheet();
+  document.getElementById('shareSheet').classList.add('show');
+}
+function closeShareSheet(){ document.getElementById('shareSheet').classList.remove('show'); }
+function renderShareSheet(){
+  const d = _shareData; if(!d) return;
+  const encUrl = encodeURIComponent(d.url);
+  const encText = encodeURIComponent(d.text || d.title || '');
+  document.getElementById('shareSheetBody').innerHTML = `
+    <div class="share-title">${esc(d.title||'Bagikan')}</div>
+    <div class="share-grid">
+      <a class="share-item" href="https://wa.me/?text=${encText}%20${encUrl}" target="_blank" rel="noopener">
+        <span class="share-ico" style="background:#25D366">${ICONS.wa}</span><span>WhatsApp</span>
+      </a>
+      <a class="share-item" href="https://t.me/share/url?url=${encUrl}&text=${encText}" target="_blank" rel="noopener">
+        <span class="share-ico" style="background:#229ED9">${ICONS.telegram}</span><span>Telegram</span>
+      </a>
+      <a class="share-item" href="https://www.facebook.com/sharer/sharer.php?u=${encUrl}" target="_blank" rel="noopener">
+        <span class="share-ico" style="background:#1877F2">${ICONS.fb}</span><span>Facebook</span>
+      </a>
+      <a class="share-item" href="https://twitter.com/intent/tweet?text=${encText}&url=${encUrl}" target="_blank" rel="noopener">
+        <span class="share-ico" style="background:#000">${ICONS.x}</span><span>X</span>
+      </a>
+      <button class="share-item" onclick="shareUnsupported('Instagram')">
+        <span class="share-ico" style="background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af,#515bd4)">${ICONS.ig}</span><span>Instagram</span>
+      </button>
+      <button class="share-item" onclick="shareUnsupported('TikTok')">
+        <span class="share-ico" style="background:#000">${ICONS.tiktok}</span><span>TikTok</span>
+      </button>
+      <button class="share-item" onclick="shareUnsupported('YouTube')">
+        <span class="share-ico" style="background:#FF0000">${ICONS.youtube}</span><span>YouTube</span>
+      </button>
+      <button class="share-item" onclick="copyShareLink()">
+        <span class="share-ico" style="background:var(--muted)">${ICONS.link}</span><span>Salin Link</span>
+      </button>
+    </div>
+    <p class="share-note">Instagram, TikTok &amp; YouTube tidak menyediakan tautan berbagi otomatis dari web — tautan akan disalin, tinggal tempel di caption, bio, DM, atau komentar.</p>
+  `;
+}
+function copyShareLink(){
+  const d = _shareData; if(!d) return;
+  navigator.clipboard.writeText(d.url).then(()=>{ toast('Link disalin'); }).catch(()=>{ toast('Gagal menyalin link'); });
+}
+function shareUnsupported(platform){
+  const d = _shareData; if(!d) return;
+  navigator.clipboard.writeText(d.url).then(()=>{ toast('Link disalin, tempel di '+platform); }).catch(()=>{ toast('Gagal menyalin link'); });
+}
 function openLightbox(list, idx, cap){
   lbList = list; lbIdx = idx;
   document.getElementById('lbImg').src = lbList[lbIdx];
@@ -1369,8 +1492,16 @@ async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); r
 /* ================= INIT ================= */
 (async function init(){
   await loadAll();
-  if(location.hash === SECRET_HASH){ page = 'admin'; history.replaceState(null,'',location.pathname); }
-  render();
+  const h = location.hash;
+  if(h === SECRET_HASH){
+    page = 'admin'; history.replaceState(null,'',location.pathname); render();
+  } else if(h.startsWith('#berita-')){
+    page = 'berita'; render(); openNews(h.slice(8));
+  } else if(h.startsWith('#kegiatan-')){
+    page = 'kegiatan'; render(); openActivity(h.slice(10));
+  } else {
+    render();
+  }
 })();
 </script>
 </body>
