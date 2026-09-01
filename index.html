@@ -1645,3 +1645,185 @@ function adminTentang(){
   <div class="card">
     ${CFG.misi.map((m,i)=>`
       <div class="field" style="display:flex; gap:6px; align-items:flex-start;">
+        <textarea style="flex:1" oninput="CFG.misi[${i}]=this.value">${esc(m)}</textarea>
+        <button class="icon-mini" onclick="removeMisi(${i})">${ICONS.trash}</button>
+      </div>`).join('')}
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Profil Organisasi</h2></div></div>
+  <div class="card"><textarea id="atProfil" style="min-height:140px; width:100%; border:1.5px solid var(--border); border-radius:11px; padding:10px 12px; font-size:12.5px; font-family:inherit;">${esc(CFG.profil)}</textarea></div>
+
+  <div class="section"><div class="section-head"><h2>Struktur Organisasi</h2><span class="more" onclick="addPerson()">+ Tambah</span></div></div>
+  ${CFG.struktur.map(pr=>`
+    <div class="admin-item">
+      <div class="logo-badge" style="border-radius:50%;">${pr.photo?`<img src="${pr.photo}">`:esc((pr.name||'?').trim().split(' ').map(w=>w[0]).slice(0,2).join(''))}</div>
+      <div class="ai-info"><b>${esc(pr.name)}</b><span>${esc(pr.jabatan)}</span></div>
+      <div class="ai-actions">
+        <button class="icon-mini" onclick="editPerson(${pr.id})">${ICONS.edit}</button>
+        <button class="icon-mini" onclick="removePerson(${pr.id})">${ICONS.trash}</button>
+      </div>
+    </div>`).join('')}
+
+  ${p ? `
+  <div class="card">
+    <h3>${p.isNew?'Tambah Pengurus':'Edit Pengurus'}</h3>
+    <div class="field"><label>Foto (opsional)</label>
+      <div class="upload-box">${p.photo?`<img class="upload-preview" src="${p.photo}">`:''}Ketuk untuk unggah<input type="file" accept="image/*" onchange="handlePersonPhoto(event)"></div>
+    </div>
+    <div class="field"><label>Nama</label><input type="text" id="pfName" value="${esc(p.name)}"></div>
+    <div class="field"><label>Jabatan</label><input type="text" id="pfJabatan" value="${esc(p.jabatan)}"></div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-outline btn-block" onclick="editingPerson=null; render()">Batal</button>
+      <button class="btn btn-primary btn-block" onclick="savePerson()">Simpan</button>
+    </div>
+  </div>` : ''}
+
+  <div style="padding:0 16px 20px">
+    <button class="btn btn-primary btn-block" onclick="saveAboutText()">Simpan Visi, Misi &amp; Profil</button>
+  </div>
+  `;
+}
+function addMisi(){ CFG.misi.push('Poin misi baru'); render(); }
+function removeMisi(i){ CFG.misi.splice(i,1); render(); }
+async function saveAboutText(){
+  CFG.visi = document.getElementById('atVisi').value.trim();
+  CFG.profil = document.getElementById('atProfil').value.trim();
+  await saveConfig(); toast('Perubahan disimpan'); render();
+}
+function addPerson(){ editingPerson={id:Date.now(), name:'', jabatan:'', photo:null, isNew:true}; render(); }
+function editPerson(id){ editingPerson = {...CFG.struktur.find(p=>p.id===id)}; render(); }
+async function handlePersonPhoto(e){ const file=e.target.files[0]; if(!file) return; editingPerson.photo = await resizeImage(file, 400, 0.75); render(); }
+async function savePerson(){
+  const name = document.getElementById('pfName').value.trim();
+  if(!name){ toast('Nama wajib diisi'); return; }
+  const data = {id:editingPerson.id, name, jabatan:document.getElementById('pfJabatan').value.trim(), photo:editingPerson.photo||null};
+  const idx = CFG.struktur.findIndex(p=>p.id===data.id);
+  if(idx>=0) CFG.struktur[idx]=data; else CFG.struktur.push(data);
+  await saveConfig(); editingPerson=null; toast('Pengurus disimpan'); render();
+}
+async function removePerson(id){ CFG.struktur = CFG.struktur.filter(p=>p.id!==id); await saveConfig(); toast('Dihapus'); render(); }
+
+/* -- Admin: Pengaturan -- */
+function adminPengaturan(){
+  return `
+  <div class="section"><div class="section-head"><h2>Identitas Situs</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Logo</label>
+      <div class="upload-box">
+        ${CFG.logo?`<img class="upload-preview" src="${CFG.logo}" style="max-height:80px; width:auto; margin:0 auto 8px;">`:''}
+        Ketuk untuk unggah logo<input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+      </div>
+      ${CFG.logo?`<button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="CFG.logo=null; render()">Hapus logo (pakai inisial)</button>`:''}
+    </div>
+    <div class="field"><label>Singkatan (untuk badge jika tanpa logo)</label><input type="text" id="stShort" value="${esc(CFG.orgShort)}" maxlength="3"></div>
+    <div class="field"><label>Nama Organisasi</label><input type="text" id="stName" value="${esc(CFG.orgName)}"></div>
+    <div class="field"><label>Nama Lengkap</label><input type="text" id="stFull" value="${esc(CFG.orgFull)}"></div>
+    <div class="field"><label>Tagline (header)</label><input type="text" id="stTagline" value="${esc(CFG.tagline)}"></div>
+    <div class="field"><label>Judul Hero (beranda)</label><input type="text" id="stHeroTitle" value="${esc(CFG.heroTitle)}"></div>
+    <div class="field"><label>Subjudul Hero</label><textarea id="stHeroSub">${esc(CFG.heroSubtitle)}</textarea></div>
+    <div class="field"><label>Statistik Beranda</label>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+        <input type="text" id="stat1" value="${esc(CFG.stat1)}" placeholder="Angka">
+        <input type="text" id="stat2" value="${esc(CFG.stat2)}" placeholder="Angka">
+        <input type="text" id="stat3" value="${esc(CFG.stat3)}" placeholder="Angka">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:6px;">
+        <input type="text" id="stat1L" value="${esc(CFG.stat1Label)}" placeholder="Label">
+        <input type="text" id="stat2L" value="${esc(CFG.stat2Label)}" placeholder="Label">
+        <input type="text" id="stat3L" value="${esc(CFG.stat3Label)}" placeholder="Label">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveIdentity()">Simpan Identitas</button>
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Kontak &amp; Lokasi</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Alamat Sekretariat</label><textarea id="stAlamat">${esc(CFG.alamat)}</textarea></div>
+    <div class="field"><label>No. Telepon / WhatsApp (format 62)</label><input type="text" id="stTelp" value="${esc(CFG.telp)}"></div>
+    <div class="field"><label>Nomor WA untuk tombol chat (format 62xxxx)</label><input type="text" id="stWa" value="${esc(CFG.wa)}"></div>
+    <div class="field"><label>Email</label><input type="text" id="stEmail" value="${esc(CFG.email)}"></div>
+    <div class="field"><label>Username Instagram</label><input type="text" id="stIg" value="${esc(CFG.ig)}"></div>
+    <div class="field"><label>Nama Halaman Facebook</label><input type="text" id="stFb" value="${esc(CFG.fb)}"></div>
+    <div class="field"><label>Koordinat Peta (lat,lng)</label><input type="text" id="stMapQ" value="${esc(CFG.mapQuery)}"></div>
+    <div class="field"><label>Link Google Maps (tombol "Buka di Maps")</label><input type="text" id="stMapLink" value="${esc(CFG.mapLink)}"></div>
+    <button class="btn btn-primary btn-block" onclick="saveContactSettings()">Simpan Kontak &amp; Lokasi</button>
+  </div>
+
+  <div class="section"><div class="section-head"><h2>Pilih Tema Warna</h2></div></div>
+  <div class="theme-grid">
+    ${THEMES.map(t=>`
+      <div class="theme-swatch ${CFG.theme===t.id?'selected':''}" onclick="chooseTheme('${t.id}')">
+        <div class="dots">${t.colors.map(c=>`<div class="dot" style="background:${c}"></div>`).join('')}</div>
+        <b>${t.name}</b>
+      </div>`).join('')}
+  </div>
+  `;
+}
+async function handleLogoUpload(e){ const file=e.target.files[0]; if(!file) return; CFG.logo = await resizeImage(file, 300, 0.85); await saveConfig(); toast('Logo diperbarui'); render(); }
+async function saveIdentity(){
+  CFG.orgShort = document.getElementById('stShort').value.trim() || 'KC';
+  CFG.orgName = document.getElementById('stName').value.trim();
+  CFG.orgFull = document.getElementById('stFull').value.trim();
+  CFG.tagline = document.getElementById('stTagline').value.trim();
+  CFG.heroTitle = document.getElementById('stHeroTitle').value.trim();
+  CFG.heroSubtitle = document.getElementById('stHeroSub').value.trim();
+  CFG.stat1 = document.getElementById('stat1').value.trim();
+  CFG.stat2 = document.getElementById('stat2').value.trim();
+  CFG.stat3 = document.getElementById('stat3').value.trim();
+  CFG.stat1Label = document.getElementById('stat1L').value.trim();
+  CFG.stat2Label = document.getElementById('stat2L').value.trim();
+  CFG.stat3Label = document.getElementById('stat3L').value.trim();
+  await saveConfig(); toast('Identitas disimpan'); render();
+}
+async function saveContactSettings(){
+  CFG.alamat = document.getElementById('stAlamat').value.trim();
+  CFG.telp = document.getElementById('stTelp').value.trim();
+  CFG.wa = document.getElementById('stWa').value.trim();
+  CFG.email = document.getElementById('stEmail').value.trim();
+  CFG.ig = document.getElementById('stIg').value.trim();
+  CFG.fb = document.getElementById('stFb').value.trim();
+  CFG.mapQuery = document.getElementById('stMapQ').value.trim();
+  CFG.mapLink = document.getElementById('stMapLink').value.trim();
+  await saveConfig(); toast('Kontak & lokasi disimpan'); render();
+}
+async function chooseTheme(id){ CFG.theme=id; await saveConfig(); render(); toast('Tema diterapkan'); }
+
+/* -- Admin: Pesan -- */
+function adminPesan(){
+  return `
+  <div class="section"><div class="section-head"><h2>Pesan Masuk (${MSG.length})</h2></div></div>
+  ${MSG.length? MSG.map(m=>`
+    <div class="card" style="${m.read?'':'border-color:var(--primary)'}">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+        <div><b style="font-size:12.5px">${esc(m.name)}</b><div style="font-size:10.5px; color:var(--muted)">${esc(m.phone||'-')}</div></div>
+        <button class="icon-mini" onclick="deleteMsg('${m.id}')">${ICONS.trash}</button>
+      </div>
+      <p style="font-size:12px; line-height:1.6;">${esc(m.message)}</p>
+      <div style="font-size:10px; color:var(--muted); margin-top:8px;">${new Date(m.date).toLocaleString('id-ID')}</div>
+    </div>`).join('') : '<div class="empty"><b>Belum ada pesan</b>Pesan dari pengunjung akan tampil di sini.</div>'}
+  `;
+}
+async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); render(); }
+
+/* ================= INIT ================= */
+(async function init(){
+  await loadAll();
+  const h = location.hash;
+  const qs = new URLSearchParams(location.search);
+  if(h === SECRET_HASH){
+    page = 'admin'; history.replaceState(null,'',location.pathname); render();
+  } else if(qs.get('berita')){
+    page = 'berita'; render(); openNews(qs.get('berita'));
+  } else if(qs.get('kegiatan')){
+    page = 'kegiatan'; render(); openActivity(qs.get('kegiatan'));
+  } else if(h.startsWith('#berita-')){
+    page = 'berita'; render(); openNews(h.slice(8));
+  } else if(h.startsWith('#kegiatan-')){
+    page = 'kegiatan'; render(); openActivity(h.slice(10));
+  } else {
+    render();
+  }
+})();
+</script>
+</body>
+</html>
