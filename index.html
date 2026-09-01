@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PK KNPI Cibinong</title>
+<!-- Meta Open Graph default (fallback). Untuk link berita/kegiatan tertentu,
+     preview dengan gambar yang sesuai dibuat secara dinamis oleh middleware.js
+     saat link diakses oleh bot WhatsApp/Facebook/Telegram/dll, lihat berkas
+     middleware.js dan api/og-image.js. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PK KNPI Cibinong">
+<meta property="og:title" content="PK KNPI Cibinong">
+<meta property="og:description" content="Wadah pemersatu dan pemberdayaan pemuda se-Kecamatan Cibinong">
+<meta property="og:image" content="/api/og-image?type=logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PK KNPI Cibinong">
+<meta name="twitter:description" content="Wadah pemersatu dan pemberdayaan pemuda se-Kecamatan Cibinong">
+<meta name="twitter:image" content="/api/og-image?type=logo">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1085,7 +1098,13 @@ function closeOverlay(){
 /* ================= SHARE ================= */
 let _shareData = null;
 function buildShareUrl(type, id){
-  return location.origin + location.pathname + '#' + type + '-' + id;
+  /* Pakai query string (?berita=ID / ?kegiatan=ID), BUKAN hash (#berita-ID).
+     Ini penting: bagian setelah "#" tidak pernah dikirim ke server, jadi
+     server (middleware.js) tidak akan bisa tahu berita mana yang mau
+     ditampilkan preview-nya kalau masih pakai hash. Dengan query string,
+     bot WhatsApp/Facebook/Telegram bisa membaca ID berita dan middleware.js
+     bisa mengirimkan gambar & judul yang sesuai sebagai preview link. */
+  return location.origin + location.pathname + '?' + type + '=' + id;
 }
 function shareNews(id){
   const n = NEWS.find(x=>x.id===id); if(!n) return;
@@ -1632,9 +1651,18 @@ async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); r
 (async function init(){
   await loadAll();
   const h = location.hash;
+  const qs = new URLSearchParams(location.search);
+  const qBerita = qs.get('berita');
+  const qKegiatan = qs.get('kegiatan');
   if(h === SECRET_HASH){
     page = 'admin'; history.replaceState(null,'',location.pathname); render();
+  } else if(qBerita){
+    page = 'berita'; render(); openNews(qBerita);
+  } else if(qKegiatan){
+    page = 'kegiatan'; render(); openActivity(qKegiatan);
   } else if(h.startsWith('#berita-')){
+    /* format lama (#berita-ID) tetap didukung supaya link yang sudah
+       terlanjur tersebar sebelumnya masih berfungsi */
     page = 'berita'; render(); openNews(h.slice(8));
   } else if(h.startsWith('#kegiatan-')){
     page = 'kegiatan'; render(); openActivity(h.slice(10));
