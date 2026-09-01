@@ -226,6 +226,32 @@ a{color:inherit; text-decoration:none;}
 }
 .upload-box input{position:absolute; inset:0; opacity:0; cursor:pointer;}
 .upload-preview{width:100%; max-height:130px; object-fit:cover; border-radius:10px; margin-bottom:8px;}
+
+/* rich text editor (isi berita) */
+.rte-toolbar{
+  display:flex; flex-wrap:wrap; gap:4px; padding:7px; border:1.5px solid var(--border); border-bottom:none;
+  border-radius:11px 11px 0 0; background:var(--surface-2);
+}
+.rte-btn{
+  width:29px; height:29px; flex-shrink:0; border-radius:8px; border:1px solid transparent; background:var(--surface);
+  color:var(--text); display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:800; font-family:'Poppins';
+}
+.rte-btn svg{width:15px; height:15px;}
+.rte-btn:active{background:var(--surface-2);}
+.rte-btn.active{background:var(--primary); border-color:var(--primary); color:#fff;}
+.rte-btn-wide{width:auto; padding:0 9px;}
+.rte-sep{width:1px; align-self:stretch; background:var(--border); margin:3px 2px;}
+.rte-content{
+  min-height:170px; max-height:440px; overflow-y:auto; border:1.5px solid var(--border); border-radius:0 0 11px 11px;
+  padding:12px; font-size:12.5px; line-height:1.75; background:var(--surface); color:var(--text);
+}
+.rte-content:focus{outline:none; border-color:var(--primary);}
+.rte-content img{max-width:100%; border-radius:10px; margin:10px 0; display:block;}
+.rte-content p{margin-bottom:8px;}
+.rte-content ul, .rte-content ol{padding-left:20px; margin-bottom:8px;}
+.rte-content h3{font-size:14px; margin:10px 0 6px; font-family:'Poppins'; font-weight:700; color:var(--primary);}
+.rte-content blockquote{border-left:3px solid var(--primary); padding-left:10px; color:var(--muted); margin:8px 0; font-style:italic;}
+.rte-hint{font-size:10px; color:var(--muted); margin-top:6px;}
 .photo-mini-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px;}
 .photo-mini-grid .pm{position:relative; aspect-ratio:1/1; border-radius:8px; overflow:hidden;}
 .photo-mini-grid .pm img{width:100%;height:100%;object-fit:cover;}
@@ -257,7 +283,13 @@ a{color:inherit; text-decoration:none;}
 .detail-pad{padding:16px;}
 .detail-pad h1{font-size:17px; font-weight:800; line-height:1.35; margin-bottom:6px;}
 .detail-pad .meta{font-size:11px; color:var(--muted); margin-bottom:14px; font-weight:600;}
-.detail-pad .content{font-size:13px; line-height:1.8; white-space:pre-line;}
+.detail-pad .content{font-size:13px; line-height:1.8;}
+.detail-pad .content p{margin-bottom:11px;}
+.detail-pad .content h3{font-size:15.5px; font-family:'Poppins'; font-weight:700; color:var(--primary); margin:16px 0 8px;}
+.detail-pad .content ul, .detail-pad .content ol{padding-left:20px; margin-bottom:11px;}
+.detail-pad .content img{max-width:100%; border-radius:12px; margin:12px 0; display:block;}
+.detail-pad .content blockquote{border-left:3px solid var(--primary); padding-left:12px; color:var(--muted); margin:11px 0; font-style:italic;}
+.detail-pad .content a{color:var(--primary); text-decoration:underline;}
 
 /* toast */
 #toast{
@@ -536,6 +568,16 @@ const ICONS = {
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.5.5l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7.5-.5l-2 2a5 5 0 007 7l1-1"/></svg>',
   tiktok:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.8c-.9-.9-1.4-2.1-1.4-3.4h-3.1v13.6c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5c.3 0 .5 0 .8.1v-3.2c-.3 0-.5-.1-.8-.1-3.1 0-5.6 2.5-5.6 5.6s2.5 5.6 5.6 5.6 5.6-2.5 5.6-5.6V9.1c1.2.9 2.7 1.4 4.3 1.4V7.4c-1 0-1.9-.3-2.7-.9-.4-.2-.8-.5-1.2-.7z"/></svg>',
   youtube:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12s0-3.2-.4-4.7c-.2-.9-.9-1.6-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.5c-.9.2-1.6.9-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.7c.2.9.9 1.6 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.5c.9-.2 1.6-.9 1.8-1.8.4-1.5.4-4.7.4-4.7zM10 15.3V8.7l6 3.3-6 3.3z"/></svg>',
+  bold:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h7a3.5 3.5 0 010 7H6zM6 11h8a3.5 3.5 0 010 7H6z"/></svg>',
+  italic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4h-8M5 20h8M14.5 4L9.5 20"/></svg>',
+  underline:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v6.5a6 6 0 0012 0V4M4 20h16"/></svg>',
+  strike:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 5.5c-.9-1-2.5-1.7-4.4-1.7-2.9 0-4.9 1.5-4.9 3.6 0 1.8 1.3 2.8 3.3 3.4M7.3 18.2c.9 1.1 2.7 1.8 4.6 1.8 2.9 0 5-1.6 5-3.9 0-1.8-1.1-2.8-2.9-3.4M3.5 12h17"/></svg>',
+  alignLeft:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h11M4 18h14"/></svg>',
+  alignCenter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M6.5 12h11M5 18h14"/></svg>',
+  alignRight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M9 12h11M6 18h14"/></svg>',
+  alignJustify:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>',
+  listUl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="4.5" cy="6" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.1" fill="currentColor" stroke="none"/><path d="M9 6h11M9 12h11M9 18h11"/></svg>',
+  listOl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><text x="1.5" y="8" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">1</text><text x="1.5" y="14" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">2</text><text x="1.5" y="20" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">3</text></svg>',
 };
 
 /* ================= DEFAULT DATA ================= */
@@ -665,6 +707,17 @@ async function saveMsg(){ try{ await window.storage.set('messages-data', JSON.st
 
 /* ================= HELPERS ================= */
 function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+/* Mengubah konten berita menjadi HTML aman untuk ditampilkan.
+   Konten baru (dari editor kaya teks) sudah berupa HTML dan langsung dipakai.
+   Konten lama (teks polos, misal data awal/seed) di-escape lalu baris kosong
+   diubah jadi paragraf agar tetap tampil rapi. */
+function toRichHtml(raw){
+  raw = (raw||'').toString();
+  if(!raw.trim()) return '';
+  if(/<[a-z][\s\S]*>/i.test(raw)) return raw;
+  const escaped = esc(raw).trim();
+  return escaped.split(/\n{2,}/).map(par=>`<p>${par.replace(/\n/g,'<br>')}</p>`).join('');
+}
 function fmtDate(d){
   if(!d) return '';
   const dt = new Date(d+'T00:00:00');
@@ -909,7 +962,7 @@ function openNews(id){
       <span class="badge">${esc(n.category)}</span>
       <h1 style="margin-top:8px">${esc(n.title)}</h1>
       <div class="meta">${fmtDate(n.date)}</div>
-      <div class="content">${esc(n.content)}</div>
+      <div class="content">${toRichHtml(n.content)}</div>
     </div>`;
   _shareData = { title:n.title, text:(n.title+' — '+(CFG.orgName||'')), url:buildShareUrl('berita', n.id) };
   history.replaceState(null,'',location.pathname+'#berita-'+n.id);
@@ -1152,6 +1205,27 @@ function renderAdminTab(){
 }
 
 /* -- Admin: Berita -- */
+let _rteSavedRange = null;
+const RTE_TOOLBAR = `
+  <div class="rte-toolbar">
+    <button type="button" class="rte-btn" data-cmd="bold" onclick="rteCmd('bold')" title="Tebal">${ICONS.bold}</button>
+    <button type="button" class="rte-btn" data-cmd="italic" onclick="rteCmd('italic')" title="Miring">${ICONS.italic}</button>
+    <button type="button" class="rte-btn" data-cmd="underline" onclick="rteCmd('underline')" title="Garis bawah">${ICONS.underline}</button>
+    <button type="button" class="rte-btn" data-cmd="strikeThrough" onclick="rteCmd('strikeThrough')" title="Coret">${ICONS.strike}</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" data-cmd="justifyLeft" onclick="rteCmd('justifyLeft')" title="Rata kiri">${ICONS.alignLeft}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyCenter" onclick="rteCmd('justifyCenter')" title="Rata tengah">${ICONS.alignCenter}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyRight" onclick="rteCmd('justifyRight')" title="Rata kanan">${ICONS.alignRight}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyFull" onclick="rteCmd('justifyFull')" title="Rata kanan-kiri (justify)">${ICONS.alignJustify}</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" onclick="rteCmd('insertUnorderedList')" title="Daftar poin">${ICONS.listUl}</button>
+    <button type="button" class="rte-btn" data-cmd="insertOrderedList" onclick="rteCmd('insertOrderedList')" title="Daftar angka">${ICONS.listOl}</button>
+    <button type="button" class="rte-btn rte-btn-wide" onclick="rteToggleHeading()" title="Sub judul">H3</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" onclick="triggerRteImage()" title="Sisipkan gambar di tengah teks">${ICONS.photo}</button>
+    <button type="button" class="rte-btn rte-btn-wide" onclick="rteCmd('removeFormat')" title="Hapus format">✕</button>
+    <input type="file" id="rteImgInput" accept="image/*" style="display:none" onchange="insertRteImage(event)">
+  </div>`;
 function adminBerita(){
   const f = editingNews;
   return `
@@ -1171,7 +1245,12 @@ function adminBerita(){
       </div>
       <div class="field"><label>Judul</label><input type="text" id="nfTitle" value="${esc(f.title)}"></div>
       <div class="field"><label>Ringkasan Singkat</label><textarea id="nfExcerpt">${esc(f.excerpt)}</textarea></div>
-      <div class="field"><label>Isi Berita</label><textarea id="nfContent" style="min-height:140px">${esc(f.content)}</textarea></div>
+      <div class="field">
+        <label>Isi Berita</label>
+        ${RTE_TOOLBAR}
+        <div class="rte-content" id="nfContent" contenteditable="true" onmouseup="rteUpdateToolbar()" onkeyup="rteUpdateToolbar()">${toRichHtml(f.content)}</div>
+        <div class="rte-hint">Pilih teks lalu ketuk ikon untuk memformat. Gambar akan disisipkan tepat di posisi kursor.</div>
+      </div>
       <div class="field"><label>Tanggal</label><input type="date" id="nfDate" value="${f.date||new Date().toISOString().slice(0,10)}"></div>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-outline btn-block" onclick="cancelNewsForm()">Batal</button>
@@ -1192,20 +1271,34 @@ function adminBerita(){
 function newNewsForm(){ editingNews={category:'Umum', title:'', excerpt:'', content:'', image:'', date:new Date().toISOString().slice(0,10)}; render(); }
 function editNewsForm(id){ editingNews = {...NEWS.find(n=>n.id===id)}; render(); }
 function cancelNewsForm(){ editingNews=null; render(); }
+/* Menyimpan nilai field yang belum di-commit ke editingNews sebelum render ulang,
+   supaya isi berita yang sedang diketik tidak hilang saat mengganti foto sampul. */
+function syncNewsFormFields(){
+  if(!editingNews) return;
+  const t=document.getElementById('nfTitle'), ex=document.getElementById('nfExcerpt'),
+        c=document.getElementById('nfContent'), cat=document.getElementById('nfCat'), d=document.getElementById('nfDate');
+  if(t) editingNews.title = t.value;
+  if(ex) editingNews.excerpt = ex.value;
+  if(c) editingNews.content = c.innerHTML;
+  if(cat) editingNews.category = cat.value;
+  if(d) editingNews.date = d.value;
+}
 async function handleNewsImg(e){
   const file = e.target.files[0]; if(!file) return;
+  syncNewsFormFields();
   const url = await resizeImage(file, 900, 0.72);
   editingNews.image = url; render();
 }
 async function saveNewsForm(){
   const title = document.getElementById('nfTitle').value.trim();
   if(!title){ toast('Judul wajib diisi'); return; }
+  const contentHtml = document.getElementById('nfContent').innerHTML.trim();
   const data = {
     id: editingNews.id || uid(),
     category: document.getElementById('nfCat').value,
     title,
     excerpt: document.getElementById('nfExcerpt').value.trim(),
-    content: document.getElementById('nfContent').value.trim(),
+    content: contentHtml,
     date: document.getElementById('nfDate').value || new Date().toISOString().slice(0,10),
     image: editingNews.image || placeholderImg('Berita','#0B3D91','#1E5FBF')
   };
@@ -1216,6 +1309,46 @@ async function saveNewsForm(){
 }
 async function deleteNews(id){
   NEWS = NEWS.filter(n=>n.id!==id); await saveNews(); toast('Berita dihapus'); render();
+}
+
+/* -- Editor teks kaya (rich text) untuk Isi Berita -- */
+function rteCmd(cmd){
+  const ed = document.getElementById('nfContent'); if(!ed) return;
+  ed.focus();
+  document.execCommand(cmd, false, null);
+  rteUpdateToolbar();
+}
+function rteToggleHeading(){
+  const ed = document.getElementById('nfContent'); if(!ed) return;
+  ed.focus();
+  let cur=''; try{ cur = document.queryCommandValue('formatBlock'); }catch(e){}
+  document.execCommand('formatBlock', false, (cur && cur.toLowerCase()==='h3') ? 'P' : 'H3');
+  rteUpdateToolbar();
+}
+function rteUpdateToolbar(){
+  ['bold','italic','underline','strikeThrough','justifyLeft','justifyCenter','justifyRight','justifyFull','insertUnorderedList','insertOrderedList'].forEach(cmd=>{
+    const btn = document.querySelector(`.rte-btn[data-cmd="${cmd}"]`);
+    if(!btn) return;
+    let state=false; try{ state = document.queryCommandState(cmd); }catch(e){}
+    btn.classList.toggle('active', state);
+  });
+}
+function triggerRteImage(){
+  const ed = document.getElementById('nfContent'); if(!ed) return;
+  ed.focus();
+  const sel = window.getSelection();
+  _rteSavedRange = (sel && sel.rangeCount>0) ? sel.getRangeAt(0).cloneRange() : null;
+  document.getElementById('rteImgInput').click();
+}
+async function insertRteImage(e){
+  const file = e.target.files[0]; if(!file) return;
+  const dataUrl = await resizeImage(file, 900, 0.72);
+  const ed = document.getElementById('nfContent'); ed.focus();
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  if(_rteSavedRange){ sel.addRange(_rteSavedRange); }
+  document.execCommand('insertHTML', false, `<img src="${dataUrl}"><p><br></p>`);
+  e.target.value = '';
 }
 
 /* -- Admin: Kegiatan -- */
