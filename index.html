@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PK KNPI Cibinong</title>
+<!-- ====== META PREVIEW (fallback umum untuk semua link) ======
+     Ini dipakai WhatsApp/Telegram/Facebook dkk saat link SITUS UTAMA
+     (bukan link berita spesifik) ditempel. Untuk thumbnail per-BERITA
+     yang berbeda-beda sesuai foto masing-masing berita, lihat file
+     api/preview.js & api/preview-image.js (baca catatan di bagian
+     bawah file ini / cek pesan penjelasan dari Claude). -->
+<meta name="description" content="Portal resmi berita dan kegiatan PK KNPI Cibinong.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PK KNPI Cibinong">
+<meta property="og:title" content="PK KNPI Cibinong">
+<meta property="og:description" content="Portal resmi berita dan kegiatan PK KNPI Cibinong.">
+<meta property="og:image" content="https://REPLACE-DENGAN-URL-LOGO-ANDA.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<!-- ⚠️ Ganti og:image di atas dengan URL gambar/logo yang benar-benar
+     ter-hosting (bukan base64), ukuran disarankan 1200x630px, supaya
+     saat link beranda situs ini ditempel di WhatsApp dkk, muncul
+     thumbnail. Bisa upload logo ke Firebase Storage / imgbb / hosting
+     lain lalu tempel URL-nya di sini. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -307,6 +327,26 @@ a{color:inherit; text-decoration:none;}
 #lightbox .lb-nav{position:absolute; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.15); color:#fff; border:none; font-size:16px;}
 #lightbox .lb-prev{left:10px;} #lightbox .lb-next{right:10px;}
 
+/* komentar berita */
+.comment-section{padding:0 16px 24px;}
+.comment-login-box{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; text-align:center;}
+.comment-login-box p{font-size:12.5px; color:var(--muted); margin-bottom:12px;}
+.comment-google-btn{display:inline-flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 16px; font-size:12.5px; font-weight:700; color:var(--text);}
+.comment-user-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
+.comment-username{font-size:12.5px; font-weight:700; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.comment-logout{background:none; border:none; font-size:11px; color:var(--muted); text-decoration:underline;}
+.comment-input{width:100%; border:1px solid var(--border); border-radius:10px; padding:10px; font-family:inherit; font-size:12.5px; background:var(--surface); color:var(--text); resize:vertical;}
+.comment-list{margin-top:16px; display:flex; flex-direction:column; gap:14px;}
+.comment-item{display:flex; gap:10px;}
+.comment-avatar{width:32px; height:32px; border-radius:50%; flex-shrink:0; background:var(--surface-2); object-fit:cover;}
+.comment-body{flex:1; min-width:0;}
+.comment-head{display:flex; align-items:baseline; gap:8px; margin-bottom:2px;}
+.comment-head b{font-size:12px;}
+.comment-head span{font-size:10.5px; color:var(--muted);}
+.comment-body p{font-size:12.5px; line-height:1.55; word-break:break-word;}
+.comment-del{margin-top:4px; background:none; border:none; font-size:10.5px; color:var(--danger); text-decoration:underline;}
+.comment-empty{font-size:12px; color:var(--muted); text-align:center; padding:14px 0;}
+
 /* share sheet */
 #shareSheet{position:absolute; inset:0; z-index:320; display:none;}
 #shareSheet.show{display:block;}
@@ -418,6 +458,7 @@ a{color:inherit; text-decoration:none;}
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
 /* ================= PENYIMPANAN DATA (FIREBASE FIRESTORE) =================
    Situs ini awalnya dibuat sebagai Claude Artifact yang memakai
@@ -454,6 +495,8 @@ const FIREBASE_CONFIG = {
 
 const _fbApp = firebase.initializeApp(FIREBASE_CONFIG);
 const _fbDb = firebase.firestore();
+const _fbAuth = firebase.auth();
+const _googleProvider = new firebase.auth.GoogleAuthProvider();
 const _FB_COLLECTION = 'knpicibinong'; // semua data disimpan di koleksi ini, 1 dokumen per key
 const _FB_CHUNK_SIZE = 700000; // batas aman per dokumen (Firestore max ~1MB/dokumen)
 
@@ -541,6 +584,123 @@ window.storage = {
   }
 };
 
+/* ================= KOMENTAR BERITA (login Google wajib) =================
+   Disimpan di koleksi Firestore terpisah "komentar" (bukan lewat
+   window.storage di atas), 1 dokumen per komentar, supaya kiriman dari
+   banyak pengunjung sekaligus tidak saling menimpa. */
+let currentUser = null;
+let _commentsUnsub = null;
+let _activeCommentNewsId = null;
+
+_fbAuth.onAuthStateChanged(function(u){
+  currentUser = u;
+  if(_activeCommentNewsId) renderCommentBox();
+});
+
+function signInGoogle(){
+  _fbAuth.signInWithPopup(_googleProvider).catch(function(e){
+    if(e && e.code === 'auth/popup-blocked'){
+      _fbAuth.signInWithRedirect(_googleProvider);
+    } else if(e && e.code !== 'auth/popup-closed-by-user'){
+      toast('Gagal login: ' + (e.message||e));
+    }
+  });
+}
+function signOutGoogle(){ _fbAuth.signOut(); }
+
+function timeAgo(ts){
+  if(!ts) return '';
+  const s = Math.max(1, Math.floor((Date.now()-ts)/1000));
+  if(s<60) return 'baru saja';
+  const m = Math.floor(s/60); if(m<60) return m+' menit lalu';
+  const h = Math.floor(m/60); if(h<24) return h+' jam lalu';
+  const d = Math.floor(h/24); if(d<30) return d+' hari lalu';
+  return new Date(ts).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function openComments(newsId){
+  _activeCommentNewsId = newsId;
+  renderCommentBox();
+  const listEl = document.getElementById('commentsList');
+  if(listEl) listEl.innerHTML = '<p class="comment-empty">Memuat komentar...</p>';
+  if(_commentsUnsub){ _commentsUnsub(); _commentsUnsub = null; }
+  _commentsUnsub = _fbDb.collection('komentar').where('newsId','==',newsId)
+    .onSnapshot(function(snap){
+      const items = [];
+      snap.forEach(function(d){ items.push(Object.assign({id:d.id}, d.data())); });
+      items.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+      renderCommentsList(items);
+    }, function(err){
+      console.error('load comments error', err);
+      const el = document.getElementById('commentsList');
+      if(el) el.innerHTML = '<p class="comment-empty">Gagal memuat komentar. Coba muat ulang halaman.</p>';
+    });
+}
+function closeComments(){
+  if(_commentsUnsub){ _commentsUnsub(); _commentsUnsub = null; }
+  _activeCommentNewsId = null;
+}
+function renderCommentBox(){
+  const el = document.getElementById('commentBoxWrap');
+  if(!el) return;
+  if(currentUser){
+    el.innerHTML = `
+      <div class="comment-user-row">
+        <img class="comment-avatar" src="${esc(currentUser.photoURL||'')}" onerror="this.style.visibility='hidden'">
+        <span class="comment-username">${esc(currentUser.displayName||'Pengguna Google')}</span>
+        <button class="comment-logout" onclick="signOutGoogle()">Keluar</button>
+      </div>
+      <textarea id="commentInput" class="comment-input" rows="3" maxlength="1000" placeholder="Tulis komentar Anda..."></textarea>
+      <button class="btn btn-accent" style="margin-top:8px;width:100%" onclick="submitComment()">Kirim Komentar</button>`;
+  } else {
+    el.innerHTML = `
+      <div class="comment-login-box">
+        <p>Masuk dengan akun Google untuk menulis komentar.</p>
+        <button class="comment-google-btn" onclick="signInGoogle()">${ICONS.google} Login dengan Google</button>
+      </div>`;
+  }
+}
+function renderCommentsList(items){
+  const wrap = document.getElementById('commentsList');
+  if(!wrap) return;
+  document.getElementById('commentsCount').textContent = items.length ? ('('+items.length+')') : '';
+  wrap.innerHTML = items.length ? items.map(function(c){
+    const mine = currentUser && currentUser.uid===c.uid;
+    return `
+    <div class="comment-item">
+      <img class="comment-avatar" src="${esc(c.photoURL||'')}" onerror="this.style.visibility='hidden'">
+      <div class="comment-body">
+        <div class="comment-head"><b>${esc(c.name||'Pengguna Google')}</b><span>${timeAgo(c.createdAt)}</span></div>
+        <p>${esc(c.text)}</p>
+        ${mine ? `<button class="comment-del" onclick="deleteComment('${c.id}')">Hapus</button>` : ''}
+      </div>
+    </div>`;
+  }).join('') : '<p class="comment-empty">Belum ada komentar. Jadilah yang pertama berkomentar.</p>';
+}
+async function submitComment(){
+  if(!currentUser){ toast('Silakan login dengan Google terlebih dahulu'); return; }
+  const ta = document.getElementById('commentInput');
+  const text = (ta && ta.value || '').trim();
+  if(!text) return;
+  if(text.length > 1000){ toast('Komentar maksimal 1000 karakter'); return; }
+  try{
+    await _fbDb.collection('komentar').add({
+      newsId: _activeCommentNewsId,
+      uid: currentUser.uid,
+      name: currentUser.displayName || 'Pengguna Google',
+      photoURL: currentUser.photoURL || '',
+      text: text,
+      createdAt: Date.now()
+    });
+    if(ta) ta.value = '';
+  }catch(e){ toast('Gagal mengirim komentar: ' + (e.message||e)); }
+}
+async function deleteComment(id){
+  if(!confirm('Hapus komentar ini?')) return;
+  try{ await _fbDb.collection('komentar').doc(id).delete(); }
+  catch(e){ toast('Gagal menghapus komentar'); }
+}
+
 /* ================= ICONS ================= */
 const ICONS = {
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
@@ -563,6 +723,7 @@ const ICONS = {
   logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>',
   photo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="M21 15l-5-5L5 21"/></svg>',
   share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4"/></svg>',
+  google:'<svg viewBox="0 0 48 48" width="18" height="18"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.6 34.9 26.9 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.9l6.5 5.5C39.9 37 44 31.2 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>',
   telegram:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3L18.8 20c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9L18 7.3c.4-.3-.1-.5-.6-.2L7 13.2 2.3 11.7c-1-.3-1-1 .2-1.5l18.4-7.1c.8-.3 1.5.2 1 1.2z"/></svg>',
   x:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.2 8.3L23 22h-6.6l-5.2-6.8L5.2 22H2l7.7-8.8L1.5 2h6.8l4.7 6.2L18.9 2zm-1.1 18h1.8L7.3 4H5.4l12.4 16z"/></svg>',
   link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.5.5l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7.5-.5l-2 2a5 5 0 007 7l1-1"/></svg>',
@@ -963,9 +1124,15 @@ function openNews(id){
       <h1 style="margin-top:8px">${esc(n.title)}</h1>
       <div class="meta">${fmtDate(n.date)}</div>
       <div class="content">${toRichHtml(n.content)}</div>
+    </div>
+    <div class="section" style="padding-top:0"><div class="section-head"><h2>Komentar <span id="commentsCount" style="font-weight:500;color:var(--muted)"></span></h2></div></div>
+    <div class="comment-section">
+      <div id="commentBoxWrap"></div>
+      <div id="commentsList" class="comment-list"></div>
     </div>`;
   _shareData = { title:n.title, text:(n.title+' — '+(CFG.orgName||'')), url:buildShareUrl('berita', n.id) };
   history.replaceState(null,'',location.pathname+'#berita-'+n.id);
+  openComments(n.id);
   openOverlay();
 }
 
@@ -1080,12 +1247,22 @@ function closeOverlay(){
   document.getElementById('overlayDetail').classList.remove('open');
   if(/^#(berita|kegiatan)-/.test(location.hash)) history.replaceState(null,'',location.pathname+location.search);
   _shareData = null;
+  closeComments();
 }
 
-/* ================= SHARE ================= */
+/* ================= SHARE =================
+   buildShareUrl mengarah ke endpoint /api/preview (lihat file
+   api/preview.js) alih-alih langsung ke halaman SPA. Endpoint itu
+   yang menampilkan gambar/judul berita saat link ditempel di
+   WhatsApp/Telegram/Facebook dkk (crawler tidak menjalankan JS,
+   jadi tidak bisa membaca hash "#berita-id" — makanya dipakai query
+   param ?type=&id= yang memang dikirim ke server), lalu meneruskan
+   pengunjung manusia ke halaman berita yang sesungguhnya.
+   ⚠️ Fitur thumbnail hanya aktif setelah file api/preview.js dan
+   api/preview-image.js ditambahkan ke project & di-deploy ulang. */
 let _shareData = null;
 function buildShareUrl(type, id){
-  return location.origin + location.pathname + '#' + type + '-' + id;
+  return location.origin + '/api/preview?type=' + encodeURIComponent(type) + '&id=' + encodeURIComponent(id);
 }
 function shareNews(id){
   const n = NEWS.find(x=>x.id===id); if(!n) return;
@@ -1468,180 +1645,3 @@ function adminTentang(){
   <div class="card">
     ${CFG.misi.map((m,i)=>`
       <div class="field" style="display:flex; gap:6px; align-items:flex-start;">
-        <textarea style="flex:1" oninput="CFG.misi[${i}]=this.value">${esc(m)}</textarea>
-        <button class="icon-mini" onclick="removeMisi(${i})">${ICONS.trash}</button>
-      </div>`).join('')}
-  </div>
-
-  <div class="section"><div class="section-head"><h2>Profil Organisasi</h2></div></div>
-  <div class="card"><textarea id="atProfil" style="min-height:140px; width:100%; border:1.5px solid var(--border); border-radius:11px; padding:10px 12px; font-size:12.5px; font-family:inherit;">${esc(CFG.profil)}</textarea></div>
-
-  <div class="section"><div class="section-head"><h2>Struktur Organisasi</h2><span class="more" onclick="addPerson()">+ Tambah</span></div></div>
-  ${CFG.struktur.map(pr=>`
-    <div class="admin-item">
-      <div class="logo-badge" style="border-radius:50%;">${pr.photo?`<img src="${pr.photo}">`:esc((pr.name||'?').trim().split(' ').map(w=>w[0]).slice(0,2).join(''))}</div>
-      <div class="ai-info"><b>${esc(pr.name)}</b><span>${esc(pr.jabatan)}</span></div>
-      <div class="ai-actions">
-        <button class="icon-mini" onclick="editPerson(${pr.id})">${ICONS.edit}</button>
-        <button class="icon-mini" onclick="removePerson(${pr.id})">${ICONS.trash}</button>
-      </div>
-    </div>`).join('')}
-
-  ${p ? `
-  <div class="card">
-    <h3>${p.isNew?'Tambah Pengurus':'Edit Pengurus'}</h3>
-    <div class="field"><label>Foto (opsional)</label>
-      <div class="upload-box">${p.photo?`<img class="upload-preview" src="${p.photo}">`:''}Ketuk untuk unggah<input type="file" accept="image/*" onchange="handlePersonPhoto(event)"></div>
-    </div>
-    <div class="field"><label>Nama</label><input type="text" id="pfName" value="${esc(p.name)}"></div>
-    <div class="field"><label>Jabatan</label><input type="text" id="pfJabatan" value="${esc(p.jabatan)}"></div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn btn-outline btn-block" onclick="editingPerson=null; render()">Batal</button>
-      <button class="btn btn-primary btn-block" onclick="savePerson()">Simpan</button>
-    </div>
-  </div>` : ''}
-
-  <div style="padding:0 16px 20px">
-    <button class="btn btn-primary btn-block" onclick="saveAboutText()">Simpan Visi, Misi &amp; Profil</button>
-  </div>
-  `;
-}
-function addMisi(){ CFG.misi.push('Poin misi baru'); render(); }
-function removeMisi(i){ CFG.misi.splice(i,1); render(); }
-async function saveAboutText(){
-  CFG.visi = document.getElementById('atVisi').value.trim();
-  CFG.profil = document.getElementById('atProfil').value.trim();
-  await saveConfig(); toast('Perubahan disimpan'); render();
-}
-function addPerson(){ editingPerson={id:Date.now(), name:'', jabatan:'', photo:null, isNew:true}; render(); }
-function editPerson(id){ editingPerson = {...CFG.struktur.find(p=>p.id===id)}; render(); }
-async function handlePersonPhoto(e){ const file=e.target.files[0]; if(!file) return; editingPerson.photo = await resizeImage(file, 400, 0.75); render(); }
-async function savePerson(){
-  const name = document.getElementById('pfName').value.trim();
-  if(!name){ toast('Nama wajib diisi'); return; }
-  const data = {id:editingPerson.id, name, jabatan:document.getElementById('pfJabatan').value.trim(), photo:editingPerson.photo||null};
-  const idx = CFG.struktur.findIndex(p=>p.id===data.id);
-  if(idx>=0) CFG.struktur[idx]=data; else CFG.struktur.push(data);
-  await saveConfig(); editingPerson=null; toast('Pengurus disimpan'); render();
-}
-async function removePerson(id){ CFG.struktur = CFG.struktur.filter(p=>p.id!==id); await saveConfig(); toast('Dihapus'); render(); }
-
-/* -- Admin: Pengaturan -- */
-function adminPengaturan(){
-  return `
-  <div class="section"><div class="section-head"><h2>Identitas Situs</h2></div></div>
-  <div class="card">
-    <div class="field"><label>Logo</label>
-      <div class="upload-box">
-        ${CFG.logo?`<img class="upload-preview" src="${CFG.logo}" style="max-height:80px; width:auto; margin:0 auto 8px;">`:''}
-        Ketuk untuk unggah logo<input type="file" accept="image/*" onchange="handleLogoUpload(event)">
-      </div>
-      ${CFG.logo?`<button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="CFG.logo=null; render()">Hapus logo (pakai inisial)</button>`:''}
-    </div>
-    <div class="field"><label>Singkatan (untuk badge jika tanpa logo)</label><input type="text" id="stShort" value="${esc(CFG.orgShort)}" maxlength="3"></div>
-    <div class="field"><label>Nama Organisasi</label><input type="text" id="stName" value="${esc(CFG.orgName)}"></div>
-    <div class="field"><label>Nama Lengkap</label><input type="text" id="stFull" value="${esc(CFG.orgFull)}"></div>
-    <div class="field"><label>Tagline (header)</label><input type="text" id="stTagline" value="${esc(CFG.tagline)}"></div>
-    <div class="field"><label>Judul Hero (beranda)</label><input type="text" id="stHeroTitle" value="${esc(CFG.heroTitle)}"></div>
-    <div class="field"><label>Subjudul Hero</label><textarea id="stHeroSub">${esc(CFG.heroSubtitle)}</textarea></div>
-    <div class="field"><label>Statistik Beranda</label>
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
-        <input type="text" id="stat1" value="${esc(CFG.stat1)}" placeholder="Angka">
-        <input type="text" id="stat2" value="${esc(CFG.stat2)}" placeholder="Angka">
-        <input type="text" id="stat3" value="${esc(CFG.stat3)}" placeholder="Angka">
-      </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:6px;">
-        <input type="text" id="stat1L" value="${esc(CFG.stat1Label)}" placeholder="Label">
-        <input type="text" id="stat2L" value="${esc(CFG.stat2Label)}" placeholder="Label">
-        <input type="text" id="stat3L" value="${esc(CFG.stat3Label)}" placeholder="Label">
-      </div>
-    </div>
-    <button class="btn btn-primary btn-block" onclick="saveIdentity()">Simpan Identitas</button>
-  </div>
-
-  <div class="section"><div class="section-head"><h2>Kontak &amp; Lokasi</h2></div></div>
-  <div class="card">
-    <div class="field"><label>Alamat Sekretariat</label><textarea id="stAlamat">${esc(CFG.alamat)}</textarea></div>
-    <div class="field"><label>No. Telepon / WhatsApp (format 62)</label><input type="text" id="stTelp" value="${esc(CFG.telp)}"></div>
-    <div class="field"><label>Nomor WA untuk tombol chat (format 62xxxx)</label><input type="text" id="stWa" value="${esc(CFG.wa)}"></div>
-    <div class="field"><label>Email</label><input type="text" id="stEmail" value="${esc(CFG.email)}"></div>
-    <div class="field"><label>Username Instagram</label><input type="text" id="stIg" value="${esc(CFG.ig)}"></div>
-    <div class="field"><label>Nama Halaman Facebook</label><input type="text" id="stFb" value="${esc(CFG.fb)}"></div>
-    <div class="field"><label>Koordinat Peta (lat,lng)</label><input type="text" id="stMapQ" value="${esc(CFG.mapQuery)}"></div>
-    <div class="field"><label>Link Google Maps (tombol "Buka di Maps")</label><input type="text" id="stMapLink" value="${esc(CFG.mapLink)}"></div>
-    <button class="btn btn-primary btn-block" onclick="saveContactSettings()">Simpan Kontak &amp; Lokasi</button>
-  </div>
-
-  <div class="section"><div class="section-head"><h2>Pilih Tema Warna</h2></div></div>
-  <div class="theme-grid">
-    ${THEMES.map(t=>`
-      <div class="theme-swatch ${CFG.theme===t.id?'selected':''}" onclick="chooseTheme('${t.id}')">
-        <div class="dots">${t.colors.map(c=>`<div class="dot" style="background:${c}"></div>`).join('')}</div>
-        <b>${t.name}</b>
-      </div>`).join('')}
-  </div>
-  `;
-}
-async function handleLogoUpload(e){ const file=e.target.files[0]; if(!file) return; CFG.logo = await resizeImage(file, 300, 0.85); await saveConfig(); toast('Logo diperbarui'); render(); }
-async function saveIdentity(){
-  CFG.orgShort = document.getElementById('stShort').value.trim() || 'KC';
-  CFG.orgName = document.getElementById('stName').value.trim();
-  CFG.orgFull = document.getElementById('stFull').value.trim();
-  CFG.tagline = document.getElementById('stTagline').value.trim();
-  CFG.heroTitle = document.getElementById('stHeroTitle').value.trim();
-  CFG.heroSubtitle = document.getElementById('stHeroSub').value.trim();
-  CFG.stat1 = document.getElementById('stat1').value.trim();
-  CFG.stat2 = document.getElementById('stat2').value.trim();
-  CFG.stat3 = document.getElementById('stat3').value.trim();
-  CFG.stat1Label = document.getElementById('stat1L').value.trim();
-  CFG.stat2Label = document.getElementById('stat2L').value.trim();
-  CFG.stat3Label = document.getElementById('stat3L').value.trim();
-  await saveConfig(); toast('Identitas disimpan'); render();
-}
-async function saveContactSettings(){
-  CFG.alamat = document.getElementById('stAlamat').value.trim();
-  CFG.telp = document.getElementById('stTelp').value.trim();
-  CFG.wa = document.getElementById('stWa').value.trim();
-  CFG.email = document.getElementById('stEmail').value.trim();
-  CFG.ig = document.getElementById('stIg').value.trim();
-  CFG.fb = document.getElementById('stFb').value.trim();
-  CFG.mapQuery = document.getElementById('stMapQ').value.trim();
-  CFG.mapLink = document.getElementById('stMapLink').value.trim();
-  await saveConfig(); toast('Kontak & lokasi disimpan'); render();
-}
-async function chooseTheme(id){ CFG.theme=id; await saveConfig(); render(); toast('Tema diterapkan'); }
-
-/* -- Admin: Pesan -- */
-function adminPesan(){
-  return `
-  <div class="section"><div class="section-head"><h2>Pesan Masuk (${MSG.length})</h2></div></div>
-  ${MSG.length? MSG.map(m=>`
-    <div class="card" style="${m.read?'':'border-color:var(--primary)'}">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-        <div><b style="font-size:12.5px">${esc(m.name)}</b><div style="font-size:10.5px; color:var(--muted)">${esc(m.phone||'-')}</div></div>
-        <button class="icon-mini" onclick="deleteMsg('${m.id}')">${ICONS.trash}</button>
-      </div>
-      <p style="font-size:12px; line-height:1.6;">${esc(m.message)}</p>
-      <div style="font-size:10px; color:var(--muted); margin-top:8px;">${new Date(m.date).toLocaleString('id-ID')}</div>
-    </div>`).join('') : '<div class="empty"><b>Belum ada pesan</b>Pesan dari pengunjung akan tampil di sini.</div>'}
-  `;
-}
-async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); render(); }
-
-/* ================= INIT ================= */
-(async function init(){
-  await loadAll();
-  const h = location.hash;
-  if(h === SECRET_HASH){
-    page = 'admin'; history.replaceState(null,'',location.pathname); render();
-  } else if(h.startsWith('#berita-')){
-    page = 'berita'; render(); openNews(h.slice(8));
-  } else if(h.startsWith('#kegiatan-')){
-    page = 'kegiatan'; render(); openActivity(h.slice(10));
-  } else {
-    render();
-  }
-})();
-</script>
-</body>
-</html>
