@@ -209,10 +209,42 @@ a{color:inherit; text-decoration:none;}
 .contact-row .ctext b{font-size:12.5px; display:block;}
 .contact-row .ctext span{font-size:11px; color:var(--muted);}
 
-/* gallery grid */
+/* gallery grid (dipakai untuk dokumentasi foto kegiatan) */
 .gal-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:2px 16px 16px;}
 .gal-grid .gitem{position:relative; border-radius:10px; overflow:hidden; aspect-ratio:1/1; background:var(--surface-2);}
 .gal-grid .gitem img{width:100%; height:100%; object-fit:cover;}
+
+/* ===== MITRA (partner) cards — rasio foto 4:5 ===== */
+.card-mitra{
+  position:relative; border-radius:16px; overflow:hidden; background:var(--surface-2);
+  aspect-ratio:4/5; border:1px solid var(--border); cursor:pointer;
+}
+.card-mitra.hs{min-width:132px; max-width:132px; flex-shrink:0;}
+.card-mitra img{width:100%; height:100%; object-fit:cover; display:block;}
+.card-mitra .mitra-cat-badge{
+  position:absolute; top:8px; left:8px; right:8px; font-size:8px; font-weight:700; letter-spacing:.2px;
+  padding:3px 8px; border-radius:20px; background:rgba(255,255,255,.94); color:var(--primary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:calc(100% - 16px);
+}
+.card-mitra .mitra-name{
+  position:absolute; left:0; right:0; bottom:0; padding:26px 10px 9px;
+  background:linear-gradient(to top, rgba(4,8,18,.88), rgba(4,8,18,.35) 65%, transparent);
+  color:#fff; font-size:11.5px; font-weight:700; line-height:1.28;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.mitra-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:2px 16px 16px;}
+
+/* upload box khusus foto flyer rasio 4:5 */
+.upload-box-45{
+  border:1.6px dashed var(--border); border-radius:13px; padding:14px; text-align:center; font-size:11.5px;
+  color:var(--muted); position:relative; background:var(--surface-2);
+}
+.upload-box-45 input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+.upload-preview-45{width:100%; max-width:200px; aspect-ratio:4/5; object-fit:cover; border-radius:12px; margin:0 auto 8px; display:block;}
+
+/* tombol kontak di detail mitra */
+.mitra-contact-actions{display:flex; gap:8px; margin-top:14px;}
+.detail-cover-45{width:100%; max-width:280px; aspect-ratio:4/5; object-fit:cover; border-radius:14px; margin:16px auto 0; display:block; background:var(--surface-2);}
 
 /* forms */
 .field{margin-bottom:12px;}
@@ -548,6 +580,7 @@ const ICONS = {
   news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>',
   activity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>',
   gallery:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.7"/><path d="M21 15l-5-5L5 21"/></svg>',
+  mitra:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
   contact:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3.1-8.7A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 3a2 2 0 01-.5 2L8 10a16 16 0 006 6l1.3-1.3a2 2 0 012-.5c1 .3 2 .5 3 .6a2 2 0 011.7 2.1z"/></svg>',
   map:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16M16 6v16"/></svg>',
   wa:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.6.1s-.6.9-.7 1.1c-.1.1-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.6-1.5-1.9-.1-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.3 0 1.4 1 2.7 1.1 2.9.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5.1-1.3A10 10 0 1012 2z"/></svg>',
@@ -650,15 +683,40 @@ function seedActivity(){
     {id:'a2', title:'Pelatihan Kewirausahaan Muda Cibinong', date:'2026-04-14', location:'Aula Kecamatan Cibinong', desc:'Pelatihan kewirausahaan bagi pemuda untuk membekali keterampilan bisnis dan digital marketing guna mendorong pemuda yang mandiri secara ekonomi.', cover:placeholderImg('Pelatihan Wirausaha','#0E7C4A','#2AAA6B'), photos:[placeholderImg('Foto 1','#0B3D91','#1E5FBF'),placeholderImg('Foto 2','#1E5FBF','#072a66')]}
   ];
 }
-function seedGallery(){
-  const cats=['Kegiatan','Rapat','Sosial','Olahraga'];
+const MITRA_CATEGORIES = [
+  'Mitra Beasiswa/Pendidikan',
+  'Mitra Sosial & Kemanusiaan',
+  'Mitra Pemerintah & Instansi',
+  'Mitra UMKM/Bisnis',
+  'Mitra Media',
+  'Mitra Lembaga Pendidikan/Pelatihan',
+];
+function seedMitra(){
   return [
-    {id:'g1', image:placeholderImg('Rapat Koordinasi','#0B3D91','#1E5FBF'), caption:'Rapat koordinasi pengurus', category:'Rapat'},
-    {id:'g2', image:placeholderImg('Baksos','#1E5FBF','#0B3D91'), caption:'Kegiatan bakti sosial', category:'Sosial'},
-    {id:'g3', image:placeholderImg('Futsal','#FFC72C','#E0A800'), caption:'Turnamen futsal antar OKP', category:'Olahraga'},
-    {id:'g4', image:placeholderImg('Pelantikan','#072a66','#0B3D91'), caption:'Pelantikan pengurus baru', category:'Kegiatan'},
-    {id:'g5', image:placeholderImg('Pelatihan','#0E7C4A','#2AAA6B'), caption:'Pelatihan kewirausahaan', category:'Kegiatan'},
-    {id:'g6', image:placeholderImg('Audiensi','#0B3D91','#072a66'), caption:'Audiensi bersama Camat', category:'Rapat'},
+    {id:'m1', name:'Yayasan Beasiswa Cibinong Cerdas', category:'Mitra Beasiswa/Pendidikan',
+      image:placeholderImg('Beasiswa','#0B3D91','#1E5FBF'),
+      caption:'<p>Program beasiswa pendidikan bagi pelajar dan mahasiswa berprestasi di wilayah Kecamatan Cibinong, bekerja sama dengan PK KNPI Cibinong.</p>',
+      phone:'6281234567890'},
+    {id:'m2', name:'Aksi Sosial Peduli Cibinong', category:'Mitra Sosial & Kemanusiaan',
+      image:placeholderImg('Sosial','#1E5FBF','#0B3D91'),
+      caption:'<p>Mitra dalam penyaluran bantuan sosial dan kemanusiaan bagi masyarakat terdampak bencana maupun kondisi kurang mampu.</p>',
+      phone:'6281234567891'},
+    {id:'m3', name:'Kecamatan Cibinong', category:'Mitra Pemerintah & Instansi',
+      image:placeholderImg('Pemerintah','#072a66','#0B3D91'),
+      caption:'<p>Sinergi bersama pemerintah kecamatan dalam mendukung berbagai program kepemudaan dan pembangunan wilayah.</p>',
+      phone:'6281234567892'},
+    {id:'m4', name:'UMKM Muda Cibinong', category:'Mitra UMKM/Bisnis',
+      image:placeholderImg('UMKM','#FFC72C','#E0A800'),
+      caption:'<p>Kemitraan dengan pelaku UMKM dan bisnis lokal untuk mendorong kewirausahaan pemuda di Kecamatan Cibinong.</p>',
+      phone:'6281234567893'},
+    {id:'m5', name:'Cibinong Media Network', category:'Mitra Media',
+      image:placeholderImg('Media','#0E7C4A','#2AAA6B'),
+      caption:'<p>Kolaborasi media dalam publikasi dan dokumentasi kegiatan-kegiatan PK KNPI Cibinong.</p>',
+      phone:'6281234567894'},
+    {id:'m6', name:'Lembaga Pelatihan Kerja Cibinong', category:'Mitra Lembaga Pendidikan/Pelatihan',
+      image:placeholderImg('Pelatihan','#7A1220','#9E2233'),
+      caption:'<p>Kerja sama pelatihan keterampilan dan pengembangan kapasitas pemuda menuju dunia kerja.</p>',
+      phone:'6281234567895'},
   ];
 }
 
@@ -666,15 +724,15 @@ function seedGallery(){
 let CFG = defaultConfig();
 let NEWS = [];
 let ACT = [];
-let GAL = [];
+let MITRA = [];
 let MSG = [];
 let page = 'beranda';
 let aboutTab = 'visi';
 let adminTab = 'berita';
 let adminAuthed = false;
-let galFilter = 'Semua';
+let mitraFilter = 'Semua';
 let lbList = []; let lbIdx = 0;
-let editingNews = null, editingAct = null, editingPerson = null;
+let editingNews = null, editingAct = null, editingPerson = null, editingMitra = null;
 
 /* ================= STORAGE ================= */
 async function loadAll(){
@@ -691,9 +749,9 @@ async function loadAll(){
     ACT = a ? JSON.parse(a.value) : seedActivity();
   }catch(e){ ACT = seedActivity(); }
   try{
-    const g = await window.storage.get('gallery-data', true);
-    GAL = g ? JSON.parse(g.value) : seedGallery();
-  }catch(e){ GAL = seedGallery(); }
+    const g = await window.storage.get('mitra-data', true);
+    MITRA = g ? JSON.parse(g.value) : seedMitra();
+  }catch(e){ MITRA = seedMitra(); }
   try{
     const m = await window.storage.get('messages-data', true);
     MSG = m ? JSON.parse(m.value) : [];
@@ -702,7 +760,7 @@ async function loadAll(){
 async function saveConfig(){ try{ await window.storage.set('site-config', JSON.stringify(CFG), true); }catch(e){ toast('Gagal menyimpan (offline?)'); } }
 async function saveNews(){ try{ await window.storage.set('news-data', JSON.stringify(NEWS), true); }catch(e){ toast('Gagal menyimpan'); } }
 async function saveAct(){ try{ await window.storage.set('activity-data', JSON.stringify(ACT), true); }catch(e){ toast('Gagal menyimpan'); } }
-async function saveGal(){ try{ await window.storage.set('gallery-data', JSON.stringify(GAL), true); }catch(e){ toast('Gagal menyimpan'); } }
+async function saveMitra(){ try{ await window.storage.set('mitra-data', JSON.stringify(MITRA), true); }catch(e){ toast('Gagal menyimpan'); } }
 async function saveMsg(){ try{ await window.storage.set('messages-data', JSON.stringify(MSG), true); }catch(e){ toast('Gagal menyimpan'); } }
 
 /* ================= HELPERS ================= */
@@ -767,7 +825,7 @@ const NAV = [
   {id:'tentang', label:'Tentang', icon:'info'},
   {id:'berita', label:'Berita', icon:'news'},
   {id:'kegiatan', label:'Kegiatan', icon:'activity'},
-  {id:'galeri', label:'Galeri', icon:'gallery'},
+  {id:'mitra', label:'Mitra', icon:'mitra'},
   {id:'kontak', label:'Kontak', icon:'contact'},
 ];
 function renderNav(){
@@ -814,7 +872,7 @@ function render(){
   else if(page==='tentang') v.innerHTML = viewTentang();
   else if(page==='berita') v.innerHTML = viewBerita();
   else if(page==='kegiatan') v.innerHTML = viewKegiatan();
-  else if(page==='galeri') v.innerHTML = viewGaleri();
+  else if(page==='mitra') v.innerHTML = viewMitra();
   else if(page==='kontak') v.innerHTML = viewKontak();
   else if(page==='admin') v.innerHTML = viewAdmin();
 }
@@ -823,7 +881,7 @@ function render(){
 function viewBeranda(){
   const latestNews = [...NEWS].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
   const latestAct = [...ACT].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,2);
-  const galPreview = GAL.slice(0,8);
+  const mitraPreview = MITRA.slice(0,8);
   return `
   <div class="hero">
     <div class="eyebrow">Portal Resmi Organisasi</div>
@@ -871,10 +929,15 @@ function viewBeranda(){
     </div>`).join('') || '<div class="empty">Belum ada kegiatan.</div>'}
 
   <div class="section">
-    <div class="section-head"><h2>Galeri Sekilas</h2><span class="more" onclick="go('galeri')">Lihat semua</span></div>
+    <div class="section-head"><h2>Mitra Kami</h2><span class="more" onclick="go('mitra')">Lihat semua</span></div>
   </div>
-  <div class="gscroll">
-    ${galPreview.map((g,i)=>`<img class="gthumb" src="${g.image}" onclick="openLightbox(${JSON.stringify(galPreview.map(x=>x.image)).replace(/"/g,'&quot;')}, ${i}, '${esc(g.caption).replace(/'/g,"\\'")}')">`).join('')}
+  <div class="hscroll">
+    ${mitraPreview.map(m=>`
+      <div class="card-mitra hs" onclick="openMitra('${m.id}')">
+        <img src="${m.image}">
+        <div class="mitra-cat-badge">${esc(m.category)}</div>
+        <div class="mitra-name">${esc(m.name)}</div>
+      </div>`).join('') || '<div class="empty" style="padding:20px">Belum ada mitra.</div>'}
   </div>
 
   <div class="card" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark)); border:none;">
@@ -1007,23 +1070,46 @@ function openActivity(id){
   openOverlay();
 }
 
-/* ================= GALERI ================= */
-function viewGaleri(){
-  const cats = ['Semua', ...new Set(GAL.map(g=>g.category))];
-  const filtered = galFilter==='Semua' ? GAL : GAL.filter(g=>g.category===galFilter);
+/* ================= MITRA ================= */
+function viewMitra(){
+  const cats = ['Semua', ...MITRA_CATEGORIES];
+  const filtered = mitraFilter==='Semua' ? MITRA : MITRA.filter(m=>m.category===mitraFilter);
   return `
-  <div class="section"><div class="section-head"><h2>Galeri Foto</h2></div></div>
-  <div class="chip-row">${cats.map(c=>`<div class="chip ${galFilter===c?'active':''}" onclick="setGalFilter('${c}')">${esc(c)}</div>`).join('')}</div>
-  <div class="gal-grid">
-    ${filtered.map((g,i)=>`
-      <div class="gitem" onclick='openLightbox(${JSON.stringify(filtered.map(x=>x.image))}, ${i}, ${JSON.stringify(g.caption)})'>
-        <img src="${g.image}">
+  <div class="section"><div class="section-head"><h2>Mitra Kami</h2></div></div>
+  <div class="chip-row">${cats.map(c=>`<div class="chip ${mitraFilter===c?'active':''}" onclick="setMitraFilter('${c.replace(/'/g,"\\'")}')">${esc(c)}</div>`).join('')}</div>
+  <div class="mitra-grid">
+    ${filtered.map(m=>`
+      <div class="card-mitra" onclick="openMitra('${m.id}')">
+        <img src="${m.image}">
+        <div class="mitra-cat-badge">${esc(m.category)}</div>
+        <div class="mitra-name">${esc(m.name)}</div>
       </div>`).join('') || ''}
   </div>
-  ${filtered.length===0? '<div class="empty"><b>Belum ada foto</b>Galeri akan segera diisi oleh admin.</div>':''}
+  ${filtered.length===0? '<div class="empty"><b>Belum ada mitra</b>Daftar mitra akan segera diisi oleh admin.</div>':''}
   `;
 }
-function setGalFilter(c){ galFilter=c; render(); }
+function setMitraFilter(c){ mitraFilter=c; render(); }
+function openMitra(id){
+  const m = MITRA.find(x=>x.id===id); if(!m) return;
+  document.getElementById('overlayTitle').textContent='Mitra';
+  const waLink = m.phone ? `https://wa.me/${m.phone.replace(/\D/g,'')}?text=${encodeURIComponent('Halo '+m.name+', saya ingin bertanya lebih lanjut mengenai kemitraan dengan '+(CFG.orgName||'PK KNPI Cibinong')+'.')}` : '';
+  const telLink = m.phone ? `tel:+${m.phone.replace(/\D/g,'')}` : '';
+  document.getElementById('overlayBody').innerHTML = `
+    <img class="detail-cover-45" src="${m.image}">
+    <div class="detail-pad">
+      <span class="badge">${esc(m.category)}</span>
+      <h1 style="margin-top:8px">${esc(m.name)}</h1>
+      <div class="content">${toRichHtml(m.caption)}</div>
+      ${m.phone? `
+      <div class="mitra-contact-actions">
+        <a class="btn btn-primary btn-block" href="${waLink}" target="_blank" rel="noopener">${ICONS.wa} WhatsApp</a>
+        <a class="btn btn-outline btn-block" href="${telLink}">${ICONS.phone} Telepon</a>
+      </div>` : ''}
+    </div>`;
+  _shareData = { title:m.name, text:(m.name+' — '+(CFG.orgName||'')), url:buildShareUrl('mitra', m.id) };
+  history.replaceState(null,'',location.pathname+'#mitra-'+m.id);
+  openOverlay();
+}
 
 /* ================= KONTAK ================= */
 function viewKontak(){
@@ -1078,7 +1164,7 @@ async function submitContact(){
 function openOverlay(){ document.getElementById('overlayDetail').classList.add('open'); }
 function closeOverlay(){
   document.getElementById('overlayDetail').classList.remove('open');
-  if(/^#(berita|kegiatan)-/.test(location.hash)) history.replaceState(null,'',location.pathname+location.search);
+  if(/^#(berita|kegiatan|mitra)-/.test(location.hash)) history.replaceState(null,'',location.pathname+location.search);
   _shareData = null;
 }
 
@@ -1176,7 +1262,7 @@ function viewAdmin(){
       <button class="btn btn-primary btn-block" onclick="tryLogin()">Masuk</button>
     </div>`;
   }
-  const tabs=[['berita','Berita'],['kegiatan','Kegiatan'],['galeri','Galeri'],['tentang','Tentang Kami'],['pengaturan','Pengaturan'],['pesan','Pesan'+(MSG.filter(m=>!m.read).length?` (${MSG.filter(m=>!m.read).length})`:'')]];
+  const tabs=[['berita','Berita'],['kegiatan','Kegiatan'],['mitra','Mitra'],['tentang','Tentang Kami'],['pengaturan','Pengaturan'],['pesan','Pesan'+(MSG.filter(m=>!m.read).length?` (${MSG.filter(m=>!m.read).length})`:'')]];
   return `
   <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px 0;">
     <span style="font-size:13px; font-weight:700;">Dashboard Admin</span>
@@ -1186,7 +1272,7 @@ function viewAdmin(){
   <div id="adminContent">${renderAdminTab()}</div>
   `;
 }
-function setAdminTab(t){ adminTab=t; editingNews=null; editingAct=null; editingPerson=null; render(); }
+function setAdminTab(t){ adminTab=t; editingNews=null; editingAct=null; editingPerson=null; editingMitra=null; render(); }
 function tryLogin(){
   const v = document.getElementById('adminPass').value;
   if(v===ADMIN_PASSWORD){ adminAuthed=true; toast('Berhasil masuk'); render(); }
@@ -1197,7 +1283,7 @@ function adminLogout(){ adminAuthed=false; go('beranda'); }
 function renderAdminTab(){
   if(adminTab==='berita') return adminBerita();
   if(adminTab==='kegiatan') return adminKegiatan();
-  if(adminTab==='galeri') return adminGaleri();
+  if(adminTab==='mitra') return adminMitra();
   if(adminTab==='tentang') return adminTentang();
   if(adminTab==='pengaturan') return adminPengaturan();
   if(adminTab==='pesan') return adminPesan();
@@ -1206,26 +1292,30 @@ function renderAdminTab(){
 
 /* -- Admin: Berita -- */
 let _rteSavedRange = null;
-const RTE_TOOLBAR = `
+let _rteTargetId = 'nfContent';
+function rteToolbarHtml(targetId){
+  return `
   <div class="rte-toolbar">
-    <button type="button" class="rte-btn" data-cmd="bold" onclick="rteCmd('bold')" title="Tebal">${ICONS.bold}</button>
-    <button type="button" class="rte-btn" data-cmd="italic" onclick="rteCmd('italic')" title="Miring">${ICONS.italic}</button>
-    <button type="button" class="rte-btn" data-cmd="underline" onclick="rteCmd('underline')" title="Garis bawah">${ICONS.underline}</button>
-    <button type="button" class="rte-btn" data-cmd="strikeThrough" onclick="rteCmd('strikeThrough')" title="Coret">${ICONS.strike}</button>
+    <button type="button" class="rte-btn" data-cmd="bold" onclick="rteCmd('bold','${targetId}')" title="Tebal">${ICONS.bold}</button>
+    <button type="button" class="rte-btn" data-cmd="italic" onclick="rteCmd('italic','${targetId}')" title="Miring">${ICONS.italic}</button>
+    <button type="button" class="rte-btn" data-cmd="underline" onclick="rteCmd('underline','${targetId}')" title="Garis bawah">${ICONS.underline}</button>
+    <button type="button" class="rte-btn" data-cmd="strikeThrough" onclick="rteCmd('strikeThrough','${targetId}')" title="Coret">${ICONS.strike}</button>
     <span class="rte-sep"></span>
-    <button type="button" class="rte-btn" data-cmd="justifyLeft" onclick="rteCmd('justifyLeft')" title="Rata kiri">${ICONS.alignLeft}</button>
-    <button type="button" class="rte-btn" data-cmd="justifyCenter" onclick="rteCmd('justifyCenter')" title="Rata tengah">${ICONS.alignCenter}</button>
-    <button type="button" class="rte-btn" data-cmd="justifyRight" onclick="rteCmd('justifyRight')" title="Rata kanan">${ICONS.alignRight}</button>
-    <button type="button" class="rte-btn" data-cmd="justifyFull" onclick="rteCmd('justifyFull')" title="Rata kanan-kiri (justify)">${ICONS.alignJustify}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyLeft" onclick="rteCmd('justifyLeft','${targetId}')" title="Rata kiri">${ICONS.alignLeft}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyCenter" onclick="rteCmd('justifyCenter','${targetId}')" title="Rata tengah">${ICONS.alignCenter}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyRight" onclick="rteCmd('justifyRight','${targetId}')" title="Rata kanan">${ICONS.alignRight}</button>
+    <button type="button" class="rte-btn" data-cmd="justifyFull" onclick="rteCmd('justifyFull','${targetId}')" title="Rata kanan-kiri (justify)">${ICONS.alignJustify}</button>
     <span class="rte-sep"></span>
-    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" onclick="rteCmd('insertUnorderedList')" title="Daftar poin">${ICONS.listUl}</button>
-    <button type="button" class="rte-btn" data-cmd="insertOrderedList" onclick="rteCmd('insertOrderedList')" title="Daftar angka">${ICONS.listOl}</button>
-    <button type="button" class="rte-btn rte-btn-wide" onclick="rteToggleHeading()" title="Sub judul">H3</button>
+    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" onclick="rteCmd('insertUnorderedList','${targetId}')" title="Daftar poin">${ICONS.listUl}</button>
+    <button type="button" class="rte-btn" data-cmd="insertOrderedList" onclick="rteCmd('insertOrderedList','${targetId}')" title="Daftar angka">${ICONS.listOl}</button>
+    <button type="button" class="rte-btn rte-btn-wide" onclick="rteToggleHeading('${targetId}')" title="Sub judul">H3</button>
     <span class="rte-sep"></span>
-    <button type="button" class="rte-btn" onclick="triggerRteImage()" title="Sisipkan gambar di tengah teks">${ICONS.photo}</button>
-    <button type="button" class="rte-btn rte-btn-wide" onclick="rteCmd('removeFormat')" title="Hapus format">✕</button>
-    <input type="file" id="rteImgInput" accept="image/*" style="display:none" onchange="insertRteImage(event)">
+    <button type="button" class="rte-btn" onclick="triggerRteImage('${targetId}')" title="Sisipkan gambar di tengah teks">${ICONS.photo}</button>
+    <button type="button" class="rte-btn rte-btn-wide" onclick="rteCmd('removeFormat','${targetId}')" title="Hapus format">✕</button>
+    <input type="file" id="rteImgInput_${targetId}" accept="image/*" style="display:none" onchange="insertRteImage(event,'${targetId}')">
   </div>`;
+}
+const RTE_TOOLBAR = rteToolbarHtml('nfContent');
 function adminBerita(){
   const f = editingNews;
   return `
@@ -1312,14 +1402,16 @@ async function deleteNews(id){
 }
 
 /* -- Editor teks kaya (rich text) untuk Isi Berita -- */
-function rteCmd(cmd){
-  const ed = document.getElementById('nfContent'); if(!ed) return;
+function rteCmd(cmd, targetId){
+  targetId = targetId || 'nfContent';
+  const ed = document.getElementById(targetId); if(!ed) return;
   ed.focus();
   document.execCommand(cmd, false, null);
   rteUpdateToolbar();
 }
-function rteToggleHeading(){
-  const ed = document.getElementById('nfContent'); if(!ed) return;
+function rteToggleHeading(targetId){
+  targetId = targetId || 'nfContent';
+  const ed = document.getElementById(targetId); if(!ed) return;
   ed.focus();
   let cur=''; try{ cur = document.queryCommandValue('formatBlock'); }catch(e){}
   document.execCommand('formatBlock', false, (cur && cur.toLowerCase()==='h3') ? 'P' : 'H3');
@@ -1333,17 +1425,20 @@ function rteUpdateToolbar(){
     btn.classList.toggle('active', state);
   });
 }
-function triggerRteImage(){
-  const ed = document.getElementById('nfContent'); if(!ed) return;
+function triggerRteImage(targetId){
+  targetId = targetId || 'nfContent';
+  const ed = document.getElementById(targetId); if(!ed) return;
   ed.focus();
   const sel = window.getSelection();
   _rteSavedRange = (sel && sel.rangeCount>0) ? sel.getRangeAt(0).cloneRange() : null;
-  document.getElementById('rteImgInput').click();
+  _rteTargetId = targetId;
+  document.getElementById('rteImgInput_'+targetId).click();
 }
-async function insertRteImage(e){
+async function insertRteImage(e, targetId){
+  targetId = targetId || _rteTargetId || 'nfContent';
   const file = e.target.files[0]; if(!file) return;
   const dataUrl = await resizeImage(file, 900, 0.72);
-  const ed = document.getElementById('nfContent'); ed.focus();
+  const ed = document.getElementById(targetId); ed.focus();
   const sel = window.getSelection();
   sel.removeAllRanges();
   if(_rteSavedRange){ sel.addRange(_rteSavedRange); }
@@ -1422,40 +1517,86 @@ async function saveActForm(){
 }
 async function deleteAct(id){ ACT = ACT.filter(a=>a.id!==id); await saveAct(); toast('Kegiatan dihapus'); render(); }
 
-/* -- Admin: Galeri -- */
-function adminGaleri(){
+/* -- Admin: Mitra -- */
+function adminMitra(){
+  const f = editingMitra;
   return `
-  <div class="section"><div class="section-head"><h2>Tambah Foto Galeri</h2></div></div>
-  <div class="card">
-    <div class="field"><label>Kategori</label><input type="text" id="gfCat" placeholder="Contoh: Kegiatan, Rapat, Sosial"></div>
-    <div class="field"><label>Keterangan Foto</label><input type="text" id="gfCap" placeholder="Keterangan singkat"></div>
-    <div class="field"><label>Unggah Foto (bisa lebih dari satu)</label>
-      <div class="upload-box">Ketuk untuk pilih foto<input type="file" accept="image/*" multiple onchange="handleGalUpload(event)"></div>
+  <div class="section"><div class="section-head"><h2>${f? (f.id?'Edit Mitra':'Tambah Mitra') : 'Daftar Mitra ('+MITRA.length+')'}</h2>
+    ${!f?`<span class="more" onclick="newMitraForm()">${ICONS.plus.replace('width','style="vertical-align:-2px" width').replace('<svg','<svg width="12" height="12"')} Tambah</span>`:''}</div></div>
+  ${f ? `
+    <div class="card">
+      <div class="field"><label>Foto / Flyer Mitra (rasio 4:5)</label>
+        <div class="upload-box-45">
+          ${f.image?`<img class="upload-preview-45" src="${f.image}">`:''}
+          Ketuk untuk unggah foto (disarankan rasio potret 4:5)
+          <input type="file" accept="image/*" onchange="handleMitraImg(event)">
+        </div>
+      </div>
+      <div class="field"><label>Kategori</label>
+        <select id="mfCat">${MITRA_CATEGORIES.map(c=>`<option ${f.category===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Nama Mitra</label><input type="text" id="mfName" value="${esc(f.name)}"></div>
+      <div class="field">
+        <label>Keterangan</label>
+        ${rteToolbarHtml('mfContent')}
+        <div class="rte-content" id="mfContent" contenteditable="true" onmouseup="rteUpdateToolbar()" onkeyup="rteUpdateToolbar()">${toRichHtml(f.caption)}</div>
+        <div class="rte-hint">Tulis profil singkat, bentuk kerja sama, atau informasi lain mengenai mitra ini. Pilih teks lalu ketuk ikon untuk memformat, seperti menulis di blog.</div>
+      </div>
+      <div class="field"><label>No. Telepon / WhatsApp (format 62xxxx)</label><input type="text" id="mfPhone" value="${esc(f.phone||'')}" placeholder="62812xxxxxxx"></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline btn-block" onclick="cancelMitraForm()">Batal</button>
+        <button class="btn btn-primary btn-block" onclick="saveMitraForm()">Simpan</button>
+      </div>
     </div>
-  </div>
-  <div class="section"><div class="section-head"><h2>Semua Foto (${GAL.length})</h2></div></div>
-  <div class="gal-grid">
-    ${GAL.map(g=>`
-      <div class="gitem">
-        <img src="${g.image}">
-        <button class="icon-mini" style="position:absolute; top:4px; right:4px; width:22px; height:22px; background:rgba(0,0,0,.55); color:#fff;" onclick="deleteGal('${g.id}')">${ICONS.trash.replace('width="24" height="24"','width="12" height="12"')}</button>
-      </div>`).join('') || ''}
-  </div>
-  ${GAL.length===0?'<div class="empty">Galeri masih kosong.</div>':''}
+  ` : (MITRA.length? MITRA.map(m=>`
+    <div class="admin-item">
+      <img src="${m.image}">
+      <div class="ai-info"><b>${esc(m.name)}</b><span>${esc(m.category)}</span></div>
+      <div class="ai-actions">
+        <button class="icon-mini" onclick="editMitraForm('${m.id}')">${ICONS.edit}</button>
+        <button class="icon-mini" onclick="deleteMitra('${m.id}')">${ICONS.trash}</button>
+      </div>
+    </div>`).join('') : '<div class="empty">Belum ada mitra. Tambahkan yang pertama.</div>')}
   `;
 }
-async function handleGalUpload(e){
-  const files=[...e.target.files]; if(!files.length) return;
-  const cat = document.getElementById('gfCat').value.trim() || 'Umum';
-  const cap = document.getElementById('gfCap').value.trim();
-  for(const f of files){
-    const img = await resizeImage(f, 800, 0.68);
-    GAL.unshift({id:uid(), image:img, caption:cap, category:cat});
-  }
-  await saveGal();
-  toast('Foto ditambahkan'); render();
+function newMitraForm(){ editingMitra={name:'', category:MITRA_CATEGORIES[0], image:'', caption:'', phone:''}; render(); }
+function editMitraForm(id){ editingMitra = {...MITRA.find(m=>m.id===id)}; render(); }
+function cancelMitraForm(){ editingMitra=null; render(); }
+/* Simpan nilai field yang belum di-commit ke editingMitra sebelum render ulang,
+   supaya keterangan yang sedang diketik tidak hilang saat mengganti foto. */
+function syncMitraFormFields(){
+  if(!editingMitra) return;
+  const n=document.getElementById('mfName'), cat=document.getElementById('mfCat'),
+        c=document.getElementById('mfContent'), p=document.getElementById('mfPhone');
+  if(n) editingMitra.name = n.value;
+  if(cat) editingMitra.category = cat.value;
+  if(c) editingMitra.caption = c.innerHTML;
+  if(p) editingMitra.phone = p.value;
 }
-async function deleteGal(id){ GAL = GAL.filter(g=>g.id!==id); await saveGal(); toast('Foto dihapus'); render(); }
+async function handleMitraImg(e){
+  const file = e.target.files[0]; if(!file) return;
+  syncMitraFormFields();
+  const url = await resizeImage(file, 900, 0.75);
+  editingMitra.image = url; render();
+}
+async function saveMitraForm(){
+  const name = document.getElementById('mfName').value.trim();
+  if(!name){ toast('Nama mitra wajib diisi'); return; }
+  const captionHtml = document.getElementById('mfContent').innerHTML.trim();
+  const data = {
+    id: editingMitra.id || uid(),
+    name,
+    category: document.getElementById('mfCat').value,
+    caption: captionHtml,
+    phone: document.getElementById('mfPhone').value.trim(),
+    image: editingMitra.image || placeholderImg('Mitra','#0B3D91','#1E5FBF')
+  };
+  const idx = MITRA.findIndex(m=>m.id===data.id);
+  if(idx>=0) MITRA[idx]=data; else MITRA.unshift(data);
+  await saveMitra();
+  editingMitra=null; toast('Mitra disimpan'); render();
+}
+async function deleteMitra(id){ MITRA = MITRA.filter(m=>m.id!==id); await saveMitra(); toast('Mitra dihapus'); render(); }
 
 /* -- Admin: Tentang Kami -- */
 function adminTentang(){
@@ -1638,6 +1779,8 @@ async function deleteMsg(id){ MSG = MSG.filter(m=>m.id!==id); await saveMsg(); r
     page = 'berita'; render(); openNews(h.slice(8));
   } else if(h.startsWith('#kegiatan-')){
     page = 'kegiatan'; render(); openActivity(h.slice(10));
+  } else if(h.startsWith('#mitra-')){
+    page = 'mitra'; render(); openMitra(h.slice(7));
   } else {
     render();
   }
