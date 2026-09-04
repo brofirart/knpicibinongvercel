@@ -234,6 +234,29 @@ a{color:inherit; text-decoration:none;}
 }
 .mitra-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:2px 16px 16px;}
 
+/* upload box khusus foto sambutan ketua rasio 1:1 */
+.upload-box-11{
+  border:1.6px dashed var(--border); border-radius:13px; padding:14px; text-align:center; font-size:11.5px;
+  color:var(--muted); position:relative; background:var(--surface-2);
+}
+.upload-box-11 input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+.upload-preview-11{width:120px; aspect-ratio:1/1; object-fit:cover; border-radius:14px; margin:0 auto 8px; display:block;}
+
+/* ===== SAMBUTAN KETUA (beranda): teks kiri, foto 1:1 kanan ===== */
+.sambutan-wrap{
+  display:flex; gap:14px; align-items:flex-start; margin:0 16px 14px; padding:16px;
+  background:var(--surface); border:1px solid var(--border); border-radius:18px;
+}
+.sambutan-wrap .sambutan-text{flex:1; min-width:0; font-size:12.5px; line-height:1.7; color:var(--text);}
+.sambutan-wrap .sambutan-text p{margin-bottom:8px;}
+.sambutan-wrap .sambutan-text p:last-child{margin-bottom:0;}
+.sambutan-wrap .sambutan-text ul, .sambutan-wrap .sambutan-text ol{padding-left:18px; margin-bottom:8px;}
+.sambutan-wrap .sambutan-text h3{font-size:13px; margin:8px 0 4px; font-family:'Poppins'; font-weight:700; color:var(--primary);}
+.sambutan-wrap .sambutan-text blockquote{border-left:3px solid var(--primary); padding-left:8px; color:var(--muted); margin:6px 0; font-style:italic;}
+.sambutan-wrap .sambutan-text img{max-width:100%; border-radius:8px; margin:8px 0; display:block;}
+.sambutan-wrap .sambutan-photo{width:104px; flex-shrink:0;}
+.sambutan-wrap .sambutan-photo img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:14px; display:block; border:1px solid var(--border);}
+
 /* upload box khusus foto flyer rasio 4:5 */
 .upload-box-45{
   border:1.6px dashed var(--border); border-radius:13px; padding:14px; text-align:center; font-size:11.5px;
@@ -639,6 +662,9 @@ function defaultConfig(){
     theme:"biru",
     heroTitle:"PK KNPI Cibinong",
     heroSubtitle:"Wadah pemersatu dan pemberdayaan pemuda se-Kecamatan Cibinong",
+    sambutanJudul:"Sambutan Ketua",
+    sambutanFoto:null,
+    sambutanTeks:"<p>Selamat datang di portal resmi PK KNPI Cibinong. Semoga kehadiran wadah ini dapat mempererat silaturahmi antar Organisasi Kepemudaan (OKP) se-Kecamatan Cibinong serta menjadi sarana bagi seluruh pemuda untuk terus berkarya, berkolaborasi, dan berkontribusi nyata bagi kemajuan daerah.</p>",
     stat1:"25+", stat1Label:"OKP Bergabung",
     stat2:"40+", stat2Label:"Program Kerja",
     stat3:"1973", stat3Label:"KNPI Berdiri",
@@ -808,6 +834,26 @@ function resizeImage(file, maxDim=900, quality=0.72){
     reader.readAsDataURL(file);
   });
 }
+/* Resize + center-crop gambar menjadi persegi (rasio 1:1), dipakai untuk foto sambutan ketua */
+function resizeImageSquare(file, size=500, quality=0.8){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const side = Math.min(img.width, img.height);
+        const sx = (img.width-side)/2, sy = (img.height-side)/2;
+        const canvas=document.createElement('canvas'); canvas.width=size; canvas.height=size;
+        canvas.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror=reject;
+      img.src=e.target.result;
+    };
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
 function scrollTop(){ document.getElementById('phoneScroll').scrollTop=0; }
 
 /* ================= RENDER: SHELL ================= */
@@ -892,6 +938,14 @@ function viewBeranda(){
       <button class="btn btn-ghost" onclick="go('kegiatan')">${ICONS.activity} Kegiatan</button>
     </div>
   </div>
+
+  ${(CFG.sambutanFoto || (CFG.sambutanTeks && CFG.sambutanTeks.trim())) ? `
+  <div class="section"><div class="section-head"><h2>${esc(CFG.sambutanJudul||'Sambutan Ketua')}</h2></div></div>
+  <div class="sambutan-wrap">
+    <div class="sambutan-text">${toRichHtml(CFG.sambutanTeks)}</div>
+    <div class="sambutan-photo"><img src="${CFG.sambutanFoto || placeholderImg('Ketua','#0B3D91','#1E5FBF')}" alt="Foto Ketua"></div>
+  </div>
+  ` : ''}
 
   <div class="stats">
     <div class="stat"><b>${esc(CFG.stat1)}</b><span>${esc(CFG.stat1Label)}</span></div>
@@ -1670,6 +1724,26 @@ async function removePerson(id){ CFG.struktur = CFG.struktur.filter(p=>p.id!==id
 /* -- Admin: Pengaturan -- */
 function adminPengaturan(){
   return `
+  <div class="section"><div class="section-head"><h2>Sambutan Ketua (Beranda)</h2></div></div>
+  <div class="card">
+    <div class="field"><label>Judul Bagian</label><input type="text" id="stSambutanJudul" value="${esc(CFG.sambutanJudul)}"></div>
+    <div class="field"><label>Foto Ketua (otomatis dipotong rasio 1:1)</label>
+      <div class="upload-box-11">
+        ${CFG.sambutanFoto?`<img class="upload-preview-11" src="${CFG.sambutanFoto}">`:''}
+        Ketuk untuk unggah foto
+        <input type="file" accept="image/*" onchange="handleSambutanFoto(event)">
+      </div>
+      ${CFG.sambutanFoto?`<button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="removeSambutanFoto()">Hapus foto</button>`:''}
+    </div>
+    <div class="field">
+      <label>Teks Sambutan</label>
+      ${rteToolbarHtml('stSambutanTeks')}
+      <div class="rte-content" id="stSambutanTeks" contenteditable="true" onmouseup="rteUpdateToolbar()" onkeyup="rteUpdateToolbar()">${toRichHtml(CFG.sambutanTeks)}</div>
+      <div class="rte-hint">Tampil di beranda: teks ini di sebelah kiri, foto ketua di sebelah kanan, tepat sebelum bagian statistik (OKP Bergabung, Program Kerja, KNPI Berdiri).</div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="saveSambutan()">Simpan Sambutan</button>
+  </div>
+
   <div class="section"><div class="section-head"><h2>Identitas Situs</h2></div></div>
   <div class="card">
     <div class="field"><label>Logo</label>
@@ -1724,6 +1798,31 @@ function adminPengaturan(){
   `;
 }
 async function handleLogoUpload(e){ const file=e.target.files[0]; if(!file) return; CFG.logo = await resizeImage(file, 300, 0.85); await saveConfig(); toast('Logo diperbarui'); render(); }
+
+/* -- Admin: Sambutan Ketua (beranda) -- */
+/* Menyimpan teks yang sedang diketik ke CFG sebelum render ulang (misal saat ganti/hapus foto),
+   supaya teks sambutan yang belum disimpan tidak hilang. */
+function syncSambutanFields(){
+  const t = document.getElementById('stSambutanTeks');
+  if(t) CFG.sambutanTeks = t.innerHTML;
+  const j = document.getElementById('stSambutanJudul');
+  if(j) CFG.sambutanJudul = j.value;
+}
+async function handleSambutanFoto(e){
+  const file = e.target.files[0]; if(!file) return;
+  syncSambutanFields();
+  CFG.sambutanFoto = await resizeImageSquare(file, 500, 0.82);
+  await saveConfig(); toast('Foto ketua diperbarui'); render();
+}
+async function removeSambutanFoto(){
+  syncSambutanFields();
+  CFG.sambutanFoto = null;
+  await saveConfig(); toast('Foto dihapus'); render();
+}
+async function saveSambutan(){
+  syncSambutanFields();
+  await saveConfig(); toast('Sambutan disimpan'); render();
+}
 async function saveIdentity(){
   CFG.orgShort = document.getElementById('stShort').value.trim() || 'KC';
   CFG.orgName = document.getElementById('stName').value.trim();
